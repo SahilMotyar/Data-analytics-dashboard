@@ -1,0 +1,13 @@
+{
+  "upload_id": "854e3be9-cc3f-4d76-94a9-207d8ef2feed",
+  "file_name": "oral_cancer_prediction_dataset.csv",
+  "file_hash": "3070535bfa747261a97901018a6c9391ac97356cba1c4fd9dd63c99e5f15763b",
+  "file_size_mb": 9.86,
+  "status": "uploaded",
+  "analysis_status": "not_started",
+  "created_at": "2026-03-02T18:23:02.372888+00:00",
+  "sheet_names": [],
+  "active_sheet": null,
+  "row_count_estimate": 84922,
+  "warning": null
+}

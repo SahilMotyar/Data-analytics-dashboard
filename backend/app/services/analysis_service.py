@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")  # non-interactive backend for thread safety
 import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib import ticker
@@ -13,6 +16,8 @@ from scipy.stats import zscore
 
 from app.core.config import settings
 from app.core.storage import read_json, write_json
+
+logger = logging.getLogger(__name__)
 
 DATETIME_PATTERNS = [
     re.compile(r"^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?$") ,
@@ -521,36 +526,221 @@ def _datetime_stats(upload_id: str, dataframe: pd.DataFrame, column: str) -> dic
     }
 
 
-def compute_analysis(upload_id: str, sheet_name: str | None = None) -> dict[str, Any]:
-    dataframe = _load_raw_dataframe(upload_id, sheet_name=sheet_name)
-    cleaned_df, cleaning_meta = _coerce_clean_dataframe(dataframe)
+def _quick_column_stats(dataframe: pd.DataFrame, column: str, inferred_type: str) -> dict[str, Any]:
+    """Compute lightweight stats without generating any chart images."""
+    series = dataframe[column]
+    missing_count = int(series.isna().sum())
+    missing_pct = round(float(series.isna().mean() * 100), 2)
 
+    base: dict[str, Any] = {
+        "column": column,
+        "inferred_type": inferred_type,
+        "count": int(series.dropna().count()),
+        "missing_count": missing_count,
+        "missing_pct": missing_pct,
+    }
+
+    if inferred_type == "numeric":
+        clean = pd.to_numeric(series, errors="coerce").dropna()
+        if not clean.empty:
+            q1, q2, q3 = float(clean.quantile(0.25)), float(clean.quantile(0.50)), float(clean.quantile(0.75))
+            iqr = q3 - q1
+            lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+            outliers_iqr = int(((clean < lower) | (clean > upper)).sum())
+            base.update({
+                "mean": float(clean.mean()),
+                "median": float(clean.median()),
+                "mode": float(clean.mode().iloc[0]) if not clean.mode().empty else None,
+                "std": float(clean.std()),
+                "min": float(clean.min()),
+                "max": float(clean.max()),
+                "range": float(clean.max() - clean.min()),
+                "q1": q1, "q2": q2, "q3": q3, "iqr": iqr,
+                "skewness": float(clean.skew()),
+                "kurtosis": float(clean.kurtosis()),
+                "outliers_iqr_count": outliers_iqr,
+            })
+    elif inferred_type == "datetime":
+        dt = pd.to_datetime(series, errors="coerce").dropna().sort_values()
+        if not dt.empty:
+            base.update({
+                "min_date": str(dt.min()),
+                "max_date": str(dt.max()),
+                "gap_count": 0,
+            })
+    else:
+        non_null = series.dropna().astype(str)
+        base.update({
+            "mode": str(non_null.mode().iloc[0]) if not non_null.mode().empty else None,
+            "cardinality": int(non_null.nunique()),
+            "unique_count": int(non_null.nunique()),
+        })
+
+    return base
+
+
+def _compute_dataset_trends(dataframe: pd.DataFrame, inferred_types: dict[str, str]) -> dict[str, Any]:
+    """Compute high-level dataset trends: correlations, top numeric distributions, category dominance."""
+    trends: dict[str, Any] = {}
+
+    # Numeric correlations (top pairs)
+    numeric_cols = [c for c, t in inferred_types.items() if t == "numeric"]
+    if len(numeric_cols) >= 2:
+        numeric_df = dataframe[numeric_cols].apply(pd.to_numeric, errors="coerce")
+        corr = numeric_df.corr(method="pearson")
+        # Find top correlated pairs (excluding self-correlation)
+        pairs = []
+        for i, c1 in enumerate(numeric_cols):
+            for c2 in numeric_cols[i + 1:]:
+                val = corr.loc[c1, c2]
+                if pd.notna(val):
+                    pairs.append({"col_a": c1, "col_b": c2, "r": round(float(val), 3)})
+        pairs.sort(key=lambda p: abs(p["r"]), reverse=True)
+        trends["top_correlations"] = pairs[:5]
+
+    # Numeric distribution summaries
+    if numeric_cols:
+        summaries = []
+        for col in numeric_cols[:10]:
+            clean = pd.to_numeric(dataframe[col], errors="coerce").dropna()
+            if clean.empty:
+                continue
+            summaries.append({
+                "column": col,
+                "mean": round(float(clean.mean()), 2),
+                "median": round(float(clean.median()), 2),
+                "std": round(float(clean.std()), 2),
+                "skew": round(float(clean.skew()), 2),
+            })
+        trends["numeric_summaries"] = summaries
+
+    # Category dominance
+    cat_cols = [c for c, t in inferred_types.items() if t in {"categorical", "boolean"}]
+    if cat_cols:
+        dominance = []
+        for col in cat_cols[:10]:
+            counts = dataframe[col].value_counts(dropna=True)
+            if counts.empty:
+                continue
+            top_val = str(counts.index[0])
+            top_pct = round(float(counts.iloc[0] / counts.sum() * 100), 1)
+            dominance.append({
+                "column": col,
+                "top_value": top_val,
+                "top_pct": top_pct,
+                "unique": int(dataframe[col].nunique()),
+            })
+        trends["category_dominance"] = dominance
+
+    # Datetime range
+    dt_cols = [c for c, t in inferred_types.items() if t == "datetime"]
+    for col in dt_cols[:3]:
+        dt = pd.to_datetime(dataframe[col], errors="coerce").dropna().sort_values()
+        if dt.empty:
+            continue
+        trends.setdefault("time_ranges", []).append({
+            "column": col,
+            "from": str(dt.min()),
+            "to": str(dt.max()),
+            "span_days": int((dt.max() - dt.min()).days),
+        })
+
+    return trends
+
+
+def compute_analysis(upload_id: str, sheet_name: str | None = None, mode: str = "auto", focus_columns: list[str] | None = None) -> dict[str, Any]:
+    """
+    Modes:
+      - auto:    quick if >50K rows, full otherwise
+      - quick:   summary stats + trends only, no per-column charts (fast)
+      - focused: full analysis only on focus_columns, quick stats for the rest
+      - full:    current behaviour — every column gets charts
+    """
+    logger.info("[%s] Loading raw data (mode=%s)...", upload_id[:8], mode)
+    dataframe = _load_raw_dataframe(upload_id, sheet_name=sheet_name)
+    row_count = len(dataframe)
+    col_count = len(dataframe.columns)
+    logger.info("[%s] Loaded %d rows × %d cols", upload_id[:8], row_count, col_count)
+
+    # Resolve 'auto' mode
+    if mode == "auto":
+        mode = "quick" if row_count > 50_000 else "full"
+        logger.info("[%s] Auto-resolved mode → %s", upload_id[:8], mode)
+
+    cleaned_df, cleaning_meta = _coerce_clean_dataframe(dataframe)
     inferred_types = {column: _infer_column_type(cleaned_df[column]) for column in cleaned_df.columns}
     flags = _quality_flags(cleaned_df, inferred_types)
     summary = _dataset_summary(cleaned_df, inferred_types, flags)
+    logger.info("[%s] Quality score: %.1f", upload_id[:8], summary["quality_score"])
+
+    # Decide which columns get charts vs quick stats
+    focus_set = set(focus_columns) if focus_columns else set()
+    if mode == "full":
+        chart_columns = set(cleaned_df.columns)
+    elif mode == "focused":
+        chart_columns = focus_set & set(cleaned_df.columns)
+    else:  # quick
+        chart_columns = set()
+
+    # For chart generation, sample large datasets to avoid matplotlib slowness
+    if len(cleaned_df) > 50_000 and chart_columns:
+        chart_df = cleaned_df.sample(n=50_000, random_state=42)
+        logger.info("[%s] Sampling 50K rows for chart generation", upload_id[:8])
+    else:
+        chart_df = cleaned_df
+
+    # Sample for quick stats computation (aggregates don't need all rows)
+    if len(cleaned_df) > 100_000:
+        stats_df = cleaned_df.sample(n=100_000, random_state=42)
+        logger.info("[%s] Sampling 100K rows for stats computation", upload_id[:8])
+    else:
+        stats_df = cleaned_df
 
     column_stats: dict[str, Any] = {}
-    for column, inferred_type in inferred_types.items():
-        if inferred_type == "numeric":
-            column_stats[column] = _numeric_stats(upload_id, cleaned_df, column)
-        elif inferred_type in {"categorical", "boolean", "id", "free_text"}:
-            column_stats[column] = _categorical_stats(upload_id, cleaned_df, column)
-        elif inferred_type == "datetime":
-            column_stats[column] = _datetime_stats(upload_id, cleaned_df, column)
+    total = len(inferred_types)
+    for idx, (column, inferred_type) in enumerate(inferred_types.items(), 1):
+        should_chart = column in chart_columns
+        label = "full" if should_chart else "quick"
+        logger.info("[%s] Processing column %d/%d: %s (%s, %s)", upload_id[:8], idx, total, column, inferred_type, label)
+
+        if should_chart:
+            # Full analysis with charts
+            if inferred_type == "numeric":
+                column_stats[column] = _numeric_stats(upload_id, chart_df, column)
+            elif inferred_type in {"categorical", "boolean", "id", "free_text"}:
+                column_stats[column] = _categorical_stats(upload_id, chart_df, column)
+            elif inferred_type == "datetime":
+                column_stats[column] = _datetime_stats(upload_id, chart_df, column)
+            else:
+                column_stats[column] = _categorical_stats(upload_id, chart_df, column)
         else:
-            column_stats[column] = _categorical_stats(upload_id, cleaned_df, column)
+            # Quick stats — no chart generation
+            column_stats[column] = _quick_column_stats(stats_df, column, inferred_type)
+
+    # Use full dataframe for exact counts (missing, count, etc.)
+    for column, inferred_type in inferred_types.items():
+        series = cleaned_df[column]
+        column_stats[column]["count"] = int(series.dropna().count())
+        column_stats[column]["missing_count"] = int(series.isna().sum())
+        column_stats[column]["missing_pct"] = round(float(series.isna().mean() * 100), 2)
+
+    # Compute overall trends for quick/focused modes
+    if mode in ("quick", "focused"):
+        summary["trends"] = _compute_dataset_trends(cleaned_df, inferred_types)
 
     cleaned_csv_path = output_dir(upload_id) / "cleaned.csv"
     cleaned_df.to_csv(cleaned_csv_path, index=False)
 
-    row_count = int(summary["rows"])
+    row_count_int = int(summary["rows"])
     result = {
         "summary": summary,
+        "analysis_mode": mode,
+        "focus_columns": list(chart_columns),
         "columns": [
             {
                 "name": column,
                 "inferred_type": inferred_types[column],
-                "health": _compute_column_health(column_stats[column], row_count),
+                "health": _compute_column_health(column_stats[column], row_count_int),
                 "quality_flags": {
                     "missing_pct": flags["missing"][column]["pct"],
                     "missing_warn": flags["missing"][column]["warn"],
@@ -572,6 +762,7 @@ def compute_analysis(upload_id: str, sheet_name: str | None = None) -> dict[str,
         result["column_stats"][col_name]["health"] = column["health"]
 
     write_json(analysis_path(upload_id), result)
+    logger.info("[%s] Analysis complete (mode=%s) — written to disk", upload_id[:8], mode)
     return result
 
 

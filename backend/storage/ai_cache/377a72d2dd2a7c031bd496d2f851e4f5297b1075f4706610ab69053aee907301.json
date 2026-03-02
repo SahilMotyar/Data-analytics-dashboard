@@ -1,0 +1,133 @@
+{
+  "key_findings": {
+    "whats_in_this_data": "Cleaned_Lung_Cancer_Survival_Data.xlsx includes operational records with mixed data types. You can use it for trend and category analysis after quick cleanup checks.",
+    "top_findings": [
+      "The dataset contains 80020 rows across 23 columns.",
+      "Overall quality score is 99.5 out of 100.",
+      "A small set of columns appears to need cleanup before reporting."
+    ],
+    "watch_out_for": [
+      "Age needs attention: Needs attention",
+      "survival_time needs attention: Critical attention"
+    ],
+    "suggested_next_step": "Review the red and yellow health columns first, then rerun summaries."
+  },
+  "dataset_overview": "The dataset has 80020 rows and 23 columns with memory usage around 66.12 MB. The overall quality score is 99.5 out of 100. Main issues include missing data and potential high-cardinality or identifier-like columns.",
+  "column_summaries": {
+    "Patient ID": {
+      "what_does_this_look_like": "Most values sit around 35732080.0 while the average is 35013399.25326. Values span from 839354.0 to 63171873.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Age": {
+      "what_does_this_look_like": "Most values sit around 67.0 while the average is 66.347. Values span from 19.0 to 84.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 275 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "survival_time": {
+      "what_does_this_look_like": "Most values sit around 17.0 while the average is 30.0817. Values span from 0.0 to 119.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 70 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "treatment delays": {
+      "what_does_this_look_like": "Most values sit around 1.0 while the average is 1.11658. Values span from 0.0 to 6.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 263 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Sex": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Male with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Race": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is White with 0.0% missing values.",
+      "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Primary.Site": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is C34.1 with 0.0% missing values.",
+      "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Grade": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Unknown with 0.0% missing values.",
+      "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Laterality": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Right with 0.0% missing values.",
+      "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "ICD-O-3": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is LUAD with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "T": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is T2 with 0.0% missing values.",
+      "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "N": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is N0 with 0.0% missing values.",
+      "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "M": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is M0 with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Stage": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is IV with 0.0% missing values.",
+      "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Surgery": {
+      "what_does_this_look_like": "Most values sit around 0.0 while the average is 0.32918. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Radiation": {
+      "what_does_this_look_like": "Most values sit around 1.0 while the average is 0.51174. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Chemotherapy": {
+      "what_does_this_look_like": "Most values sit around 1.0 while the average is 0.58798. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "OS": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Dead with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "CSS": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Cancer dead with 0.0% missing values.",
+      "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Marital status": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Married with 0.0% missing values.",
+      "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "income": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is 55-75K with 0.0% missing values.",
+      "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "County": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is City with 0.0% missing values.",
+      "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "event": {
+      "what_does_this_look_like": "Most values sit around 1.0 while the average is 0.7817. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 10915 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    }
+  }
+}

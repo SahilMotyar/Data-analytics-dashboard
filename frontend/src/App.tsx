@@ -1,7 +1,12 @@
 import axios from 'axios'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { motion, AnimatePresence } from 'framer-motion'
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Types
+   ═══════════════════════════════════════════════════════════════════════ */
 
 type UploadMeta = {
   upload_id: string
@@ -10,6 +15,8 @@ type UploadMeta = {
   sheet_names?: string[]
   active_sheet?: string | null
   warning?: string | null
+  row_count_estimate?: number | null
+  detected_columns?: string[]
 }
 
 type DatasetSummary = {
@@ -18,6 +25,12 @@ type DatasetSummary = {
   memory_mb: number
   quality_score: number
   type_breakdown: Record<string, number>
+  trends?: {
+    top_correlations?: { col_a: string; col_b: string; r: number }[]
+    numeric_summaries?: { column: string; mean: number; median: number; std: number; skew: number }[]
+    category_dominance?: { column: string; top_value: string; top_pct: number; unique: number }[]
+    time_ranges?: { column: string; from: string; to: string; span_days: number }[]
+  }
 }
 
 type HealthDimension = {
@@ -76,24 +89,50 @@ type ChatMessage = {
   content: string
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+/* ═══════════════════════════════════════════════════════════════════════
+   Constants & helpers
+   ═══════════════════════════════════════════════════════════════════════ */
 
-const api = axios.create({
-  baseURL: API_BASE,
-})
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const api = axios.create({ baseURL: API_BASE })
 
 function chartUrl(path?: string) {
   if (!path) return ''
   return path.startsWith('http') ? path : `${API_BASE}${path}`
 }
 
-function badgeClass(status: string) {
-  if (status === 'critical') return 'bg-red-50 text-red-700 border-red-200'
-  if (status === 'warning') return 'bg-amber-50 text-amber-700 border-amber-200'
-  return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+const fade = {
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+  transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
 }
 
+function qualityLabel(score: number) {
+  if (score >= 95) return { text: 'Excellent', color: 'bg-emerald-100 text-emerald-800' }
+  if (score >= 85) return { text: 'Good', color: 'bg-blue-100 text-blue-800' }
+  if (score >= 70) return { text: 'Fair', color: 'bg-amber-100 text-amber-800' }
+  return { text: 'Needs Work', color: 'bg-red-100 text-red-800' }
+}
+
+function gradeFromScore(score: number) {
+  if (score >= 97) return 'A+'
+  if (score >= 93) return 'A'
+  if (score >= 90) return 'A-'
+  if (score >= 87) return 'B+'
+  if (score >= 83) return 'B'
+  if (score >= 80) return 'B-'
+  if (score >= 70) return 'C'
+  if (score >= 60) return 'D'
+  return 'F'
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Application
+   ═══════════════════════════════════════════════════════════════════════ */
+
 function App() {
+  /* ── State ── */
   const [file, setFile] = useState<File | null>(null)
   const [uploadMeta, setUploadMeta] = useState<UploadMeta | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -106,7 +145,6 @@ function App() {
   const [columnStats, setColumnStats] = useState<ColumnStats | null>(null)
   const [sharePath, setSharePath] = useState<string>('')
   const [error, setError] = useState('')
-  const [attentionOnly, setAttentionOnly] = useState(false)
   const [viewMode, setViewMode] = useState<'simple' | 'analyst'>(() => {
     const stored = localStorage.getItem('datalens:view-mode')
     return stored === 'analyst' ? 'analyst' : 'simple'
@@ -114,69 +152,74 @@ function App() {
   const [showRawStats, setShowRawStats] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
-  const [chatOpen, setChatOpen] = useState(viewMode === 'simple')
+  const [chatOpen, setChatOpen] = useState(false)
   const [chatLoading, setChatLoading] = useState(false)
+  const chatEndRef = useRef<HTMLDivElement>(null)
+  const [fabOpen, setFabOpen] = useState(false)
+  const [analysisMode, setAnalysisMode] = useState<'auto' | 'quick' | 'focused' | 'full'>('auto')
+  const [focusColumns, setFocusColumns] = useState<string[]>([])
+  const [detectedColumns, setDetectedColumns] = useState<string[]>([])
+  const [rowEstimate, setRowEstimate] = useState<number | null>(null)
+  const [showAnalysisOptions, setShowAnalysisOptions] = useState(false)
 
   const uploadId = uploadMeta?.upload_id
   const canAnalyze = !!uploadId && uploadMeta?.analysis_status !== 'running' && uploadMeta?.analysis_status !== 'queued'
+  const isLargeFile = (rowEstimate ?? 0) > 20_000
 
-  useEffect(() => {
-    localStorage.setItem('datalens:view-mode', viewMode)
-    setChatOpen(viewMode === 'simple')
-  }, [viewMode])
+  useEffect(() => { localStorage.setItem('datalens:view-mode', viewMode) }, [viewMode])
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [chatMessages])
 
+  /* ── Upload ── */
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setError('')
     const selected = acceptedFiles[0]
     if (!selected) return
     const valid = selected.name.endsWith('.csv') || selected.name.endsWith('.xlsx') || selected.name.endsWith('.xls')
-    if (!valid) {
-      setError('Only .csv, .xlsx, .xls are supported')
-      return
-    }
-    if (selected.size > 50 * 1024 * 1024) {
-      setError('Max file size is 50MB')
-      return
-    }
+    if (!valid) { setError('Only .csv, .xlsx, .xls are supported'); return }
+    if (selected.size > 50 * 1024 * 1024) { setError('Max file size is 50MB'); return }
     setFile(selected)
-    setUploadMeta(null)
-    setSummary(null)
-    setKeyFindings(null)
-    setColumns([])
-    setSelectedColumn('')
-    setColumnStats(null)
-    setSharePath('')
-    setChatMessages([])
+    setUploadMeta(null); setSummary(null); setKeyFindings(null); setColumns([])
+    setSelectedColumn(''); setColumnStats(null); setSharePath(''); setChatMessages([])
   }, [])
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: false,
-  })
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false })
 
   const uploadFile = async () => {
     if (!file) return
-    setUploading(true)
-    setError('')
-    setUploadProgress(0)
-
+    setUploading(true); setError(''); setUploadProgress(0)
     try {
       const formData = new FormData()
       formData.append('file', file)
       const response = await api.post('/api/v1/uploads', formData, {
-        onUploadProgress: (evt) => {
-          if (!evt.total) return
-          setUploadProgress(Math.round((evt.loaded * 100) / evt.total))
-        },
+        onUploadProgress: (evt) => { if (evt.total) setUploadProgress(Math.round((evt.loaded * 100) / evt.total)) },
       })
       setUploadMeta(response.data.metadata)
-    } catch {
-      setError('Upload failed')
-    } finally {
-      setUploading(false)
-    }
+    } catch { setError('Upload failed') }
+    finally { setUploading(false) }
   }
 
+  /* ── Detect columns after upload ── */
+  useEffect(() => {
+    if (!uploadMeta) return
+    if (uploadMeta.row_count_estimate) setRowEstimate(uploadMeta.row_count_estimate)
+    if (uploadMeta.detected_columns) setDetectedColumns(uploadMeta.detected_columns)
+    // Fetch full meta (populates detected_columns on server)
+    const detectCols = async () => {
+      try {
+        const res = await api.get(`/api/v1/uploads/${uploadMeta.upload_id}`)
+        if (res.data.row_count_estimate) setRowEstimate(res.data.row_count_estimate)
+        if (res.data.detected_columns) setDetectedColumns(res.data.detected_columns)
+      } catch { /* ignore */ }
+    }
+    void detectCols()
+    // Show options automatically for large files
+    if ((uploadMeta.row_count_estimate ?? 0) > 20_000) {
+      setShowAnalysisOptions(true)
+      setAnalysisMode('quick')
+    }
+  }, [uploadMeta])
+
+  /* ── Analysis ── */
   const fetchColumnStats = useCallback(async (name: string, id?: string) => {
     const targetId = id || uploadId
     if (!targetId) return
@@ -191,483 +234,760 @@ function App() {
       api.get(`/api/v1/analysis/${id}/columns`),
       api.get(`/api/v1/analysis/${id}/key-findings`),
     ])
-
     const loadedColumns: ColumnItem[] = columnsRes.data
     setSummary(summaryRes.data)
     setColumns(loadedColumns)
     setKeyFindings(findingsRes.data)
-
-    if (loadedColumns.length > 0) {
-      await fetchColumnStats(loadedColumns[0].name, id)
-    }
+    if (loadedColumns.length > 0) await fetchColumnStats(loadedColumns[0].name, id)
   }, [fetchColumnStats])
 
-  const startAnalysis = async () => {
+  const startAnalysis = async (modeOverride?: 'auto' | 'quick' | 'focused' | 'full') => {
     if (!uploadId) return
-    setRunningAnalysis(true)
-    setError('')
+    setRunningAnalysis(true); setError('')
+    const mode = modeOverride || analysisMode
     try {
       await api.post(`/api/v1/analysis/${uploadId}/start`, {
         active_sheet: uploadMeta?.active_sheet || undefined,
+        mode,
+        focus_columns: mode === 'focused' ? focusColumns : [],
       })
       setUploadMeta((prev) => (prev ? { ...prev, analysis_status: 'queued' } : prev))
-    } catch {
-      setError('Failed to start analysis')
-      setRunningAnalysis(false)
-    }
+    } catch { setError('Failed to start analysis'); setRunningAnalysis(false) }
   }
 
   useEffect(() => {
     if (!uploadId) return
     if (!['queued', 'running'].includes(uploadMeta?.analysis_status || '')) return
-
     const timer = window.setInterval(async () => {
       const statusRes = await api.get(`/api/v1/analysis/${uploadId}/status`)
       const newStatus = statusRes.data.status
       setUploadMeta((prev) => (prev ? { ...prev, analysis_status: newStatus } : prev))
-
-      if (newStatus === 'completed') {
-        window.clearInterval(timer)
-        setRunningAnalysis(false)
-        await loadDashboard(uploadId)
-      }
-      if (newStatus === 'failed') {
-        window.clearInterval(timer)
-        setRunningAnalysis(false)
-        setError(statusRes.data.error || 'Analysis failed')
-      }
+      if (newStatus === 'completed') { window.clearInterval(timer); setRunningAnalysis(false); await loadDashboard(uploadId) }
+      if (newStatus === 'failed') { window.clearInterval(timer); setRunningAnalysis(false); setError(statusRes.data.error || 'Analysis failed') }
     }, 2000)
-
     return () => window.clearInterval(timer)
   }, [uploadId, uploadMeta?.analysis_status, loadDashboard])
 
+  /* ── Column type override ── */
   const updateType = async (name: string, newType: string) => {
     if (!uploadId) return
-    await api.patch(`/api/v1/analysis/${uploadId}/columns/${encodeURIComponent(name)}/type`, {
-      new_type: newType,
-    })
-
+    await api.patch(`/api/v1/analysis/${uploadId}/columns/${encodeURIComponent(name)}/type`, { new_type: newType })
     setColumns((prev) => prev.map((item) => (item.name === name ? { ...item, inferred_type: newType } : item)))
     await fetchColumnStats(name)
   }
 
-  const createPdf = async () => {
-    if (!uploadId) return
-    const response = await api.post(`/api/v1/analysis/${uploadId}/export/pdf`)
-    window.open(chartUrl(response.data.pdf_url), '_blank')
-  }
+  /* ── Exports ── */
+  const createPdf = async () => { if (!uploadId) return; const r = await api.post(`/api/v1/analysis/${uploadId}/export/pdf`); window.open(chartUrl(r.data.pdf_url), '_blank') }
+  const createShare = async () => { if (!uploadId) return; const r = await api.post(`/api/v1/analysis/${uploadId}/share`); const path = `${API_BASE}${r.data.share_path}`; setSharePath(path); await navigator.clipboard.writeText(path) }
+  const downloadCleanedCsv = () => { if (uploadId) window.open(`${API_BASE}/api/v1/analysis/${uploadId}/export/cleaned-csv`, '_blank') }
+  const downloadExcel = (sample?: number) => { if (uploadId) window.open(`${API_BASE}/api/v1/analysis/${uploadId}/export/excel${sample ? `?sample=${sample}` : ''}`, '_blank') }
+  const downloadStatsJson = () => { if (uploadId) window.open(`${API_BASE}/api/v1/analysis/${uploadId}/export/stats-json`, '_blank') }
 
-  const createShare = async () => {
-    if (!uploadId) return
-    const response = await api.post(`/api/v1/analysis/${uploadId}/share`)
-    const path = `${API_BASE}${response.data.share_path}`
-    setSharePath(path)
-    await navigator.clipboard.writeText(path)
-  }
-
-  const downloadCleanedCsv = () => {
-    if (!uploadId) return
-    window.open(`${API_BASE}/api/v1/analysis/${uploadId}/export/cleaned-csv`, '_blank')
-  }
-
-  const downloadExcel = () => {
-    if (!uploadId) return
-    window.open(`${API_BASE}/api/v1/analysis/${uploadId}/export/excel`, '_blank')
-  }
-
-  const downloadStatsJson = () => {
-    if (!uploadId) return
-    window.open(`${API_BASE}/api/v1/analysis/${uploadId}/export/stats-json`, '_blank')
-  }
-
+  /* ── Chat ── */
   const starterPrompts = [
     'What stands out in this data?',
     'Are there any data quality issues?',
-    'Summarize this for a non-technical audience',
+    'Summarize for a non-technical audience',
     'Which columns need attention?',
     'What would you investigate first?',
   ]
 
   const sendChatMessage = async (message: string) => {
     if (!uploadId || !message.trim() || chatLoading) return
-    const userMessage: ChatMessage = { role: 'user', content: message.trim() }
+    const userMessage: ChatMessage = { role: 'user' as const, content: message.trim() }
     const baseHistory = [...chatMessages, userMessage].slice(-10)
-    setChatMessages(baseHistory)
-    setChatInput('')
-    setChatLoading(true)
-
+    setChatMessages(baseHistory); setChatInput(''); setChatLoading(true)
     try {
       const response = await fetch(`${API_BASE}/api/v1/analysis/${uploadId}/chat/stream`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: message.trim(), history: baseHistory }),
       })
-
-      if (!response.body) {
-        throw new Error('No stream available')
-      }
-
+      if (!response.body) throw new Error('No stream')
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let assistantText = ''
       setChatMessages((prev) => [...prev, { role: 'assistant' as const, content: '' }].slice(-10))
-
       while (true) {
         const { value, done } = await reader.read()
         if (done) break
-
         const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\n').filter((line) => line.startsWith('data: '))
+        const lines = chunk.split('\n').filter((l) => l.startsWith('data: '))
         for (const line of lines) {
           const payload = JSON.parse(line.replace('data: ', '')) as { token?: string; done?: boolean }
           if (payload.token) {
             assistantText += payload.token
-            setChatMessages((prev) => {
-              const copy = [...prev]
-              copy[copy.length - 1] = { role: 'assistant', content: assistantText }
-              return copy.slice(-10)
-            })
+            setChatMessages((prev) => { const c = [...prev]; c[c.length - 1] = { role: 'assistant' as const, content: assistantText }; return c.slice(-10) })
           }
         }
       }
-    } catch {
-      setChatMessages((prev) => [...prev, { role: 'assistant' as const, content: 'I could not answer right now. Please try again.' }].slice(-10))
-    } finally {
-      setChatLoading(false)
-    }
+    } catch { setChatMessages((prev) => [...prev, { role: 'assistant' as const, content: 'I could not answer right now.' }].slice(-10)) }
+    finally { setChatLoading(false) }
   }
 
-  const onChatEnter = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      void sendChatMessage(chatInput)
-    }
-  }
+  const onChatEnter = (e: KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') { e.preventDefault(); void sendChatMessage(chatInput) } }
 
-  const typeOptions = ['numeric', 'categorical', 'boolean', 'datetime', 'free_text', 'id']
-
+  /* ── Derived ── */
   const healthStats = useMemo(() => {
     const total = columns.length
-    const flagged = columns.filter((column) => ['warning', 'critical'].includes(column.health?.overall?.status || 'good')).length
+    const flagged = columns.filter((c) => ['warning', 'critical'].includes(c.health?.overall?.status || 'good')).length
     return { total, flagged }
   }, [columns])
 
-  const visibleColumns = useMemo(() => {
-    if (!attentionOnly) return columns
-    return columns.filter((column) => ['warning', 'critical'].includes(column.health?.overall?.status || 'good'))
-  }, [columns, attentionOnly])
+  const topCategory = useMemo(() => {
+    const cat = columns.find((c) => c.inferred_type === 'categorical')
+    return cat?.name || null
+  }, [columns])
 
-  const hideRaw = viewMode === 'simple'
+  const typeOptions = ['numeric', 'categorical', 'boolean', 'datetime', 'free_text', 'id']
 
+  /* ═══════════════════════════════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════════════════════════════ */
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">DataLens</h1>
-          <button
-            className="rounded border bg-white px-4 py-2 text-sm"
-            onClick={() => setViewMode((prev) => (prev === 'simple' ? 'analyst' : 'simple'))}
-          >
-            {viewMode === 'simple' ? '👤 Simple View' : '🔬 Analyst View'}
-          </button>
+    <div className="min-h-screen bg-[#f7f8fa]">
+
+      {/* ── Sticky Header ── */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+          <h1 className="text-lg font-bold tracking-tight text-gray-900">DataLens</h1>
+          <div className="flex items-center gap-3">
+            {summary && (
+              <button
+                onClick={() => setViewMode((p) => (p === 'simple' ? 'analyst' : 'simple'))}
+                className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-200"
+              >
+                {viewMode === 'simple' ? 'Simple' : 'Analyst'}
+              </button>
+            )}
+            {summary && (
+              <button
+                onClick={() => { setSummary(null); setUploadMeta(null); setFile(null); setColumns([]); setColumnStats(null); setKeyFindings(null); setSelectedColumn(''); setChatMessages([]) }}
+                className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-200"
+              >
+                New Upload
+              </button>
+            )}
+          </div>
         </div>
+      </header>
 
-        {!summary && (
-          <section className="rounded-xl border bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold">Upload Page</h2>
-            <div
-              {...getRootProps()}
-              className={`cursor-pointer rounded-lg border-2 border-dashed p-10 text-center ${
-                isDragActive ? 'border-blue-500 bg-blue-50' : 'border-slate-300'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <p className="text-sm text-slate-600">Drag & drop CSV/XLS/XLSX (max 50MB), or click to select</p>
-              {file && <p className="mt-3 text-sm font-medium">Selected: {file.name}</p>}
-            </div>
+      <main className="mx-auto max-w-7xl px-6 pb-24 pt-8">
+        <AnimatePresence mode="wait">
 
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <button
-                onClick={uploadFile}
-                disabled={!file || uploading}
-                className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+          {/* ════════════════════════════════════════════════════════════
+             UPLOAD VIEW
+             ════════════════════════════════════════════════════════════ */}
+          {!summary && (
+            <motion.div key="upload" {...fade} className="mx-auto max-w-2xl space-y-6 pt-16">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight text-gray-900">Instant insights from your data</h2>
+                <p className="mt-2 text-gray-500">Drop a CSV or Excel file — no setup needed</p>
+              </div>
+
+              <div
+                {...getRootProps()}
+                className={`cursor-pointer rounded-2xl p-14 text-center transition-all duration-200 ${
+                  isDragActive
+                    ? 'bg-blue-50 ring-2 ring-blue-300'
+                    : 'bg-white ring-1 ring-gray-200 hover:ring-gray-300'
+                }`}
               >
-                {uploading ? 'Uploading...' : 'Upload'}
-              </button>
-
-              <button
-                onClick={startAnalysis}
-                disabled={!canAnalyze || runningAnalysis}
-                className="rounded bg-emerald-600 px-4 py-2 text-white disabled:opacity-50"
-              >
-                {runningAnalysis ? 'Running Analysis...' : 'Start Analysis'}
-              </button>
-
-              {!!uploadMeta?.sheet_names?.length && (
-                <select
-                  value={uploadMeta.active_sheet || ''}
-                  onChange={(e) => setUploadMeta((prev) => (prev ? { ...prev, active_sheet: e.target.value } : prev))}
-                  className="rounded border px-3 py-2"
-                >
-                  {uploadMeta.sheet_names.map((sheet) => (
-                    <option key={sheet} value={sheet}>
-                      {sheet}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            {uploading && (
-              <div className="mt-4 h-2 w-full rounded bg-slate-200">
-                <div className="h-2 rounded bg-blue-600" style={{ width: `${uploadProgress}%` }} />
+                <input {...getInputProps()} />
+                <div className="text-4xl">📊</div>
+                <p className="mt-4 font-medium text-gray-700">{isDragActive ? 'Drop it here!' : 'Drag & drop your file here'}</p>
+                <p className="mt-1 text-sm text-gray-400">CSV, XLS, XLSX · up to 50 MB</p>
+                {file && <p className="mt-4 text-sm font-semibold text-gray-900">Selected: {file.name}</p>}
               </div>
-            )}
 
-            {uploadMeta && (
-              <div className="mt-4 rounded bg-slate-100 p-3 text-sm">
-                <p>Upload ID: {uploadMeta.upload_id}</p>
-                <p>Status: {uploadMeta.analysis_status}</p>
-                {uploadMeta.warning && <p className="text-amber-700">{uploadMeta.warning}</p>}
-              </div>
-            )}
-
-            {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-          </section>
-        )}
-
-        {summary && (
-          <section className="grid grid-cols-1 gap-4">
-            {keyFindings && (
-              <div className="rounded-xl border bg-white p-5 shadow-sm">
-                <h2 className="mb-4 text-lg font-semibold">📋 Key Findings</h2>
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  <div>
-                    <p className="mb-1 text-sm font-semibold">What's in this data?</p>
-                    <p className="text-sm text-slate-700">{keyFindings.whats_in_this_data}</p>
-                  </div>
-                  <div>
-                    <p className="mb-1 text-sm font-semibold">➡️ Suggested Next Step</p>
-                    <p className="text-sm text-slate-700">{keyFindings.suggested_next_step}</p>
-                  </div>
-                </div>
-                <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                  <div>
-                    <p className="mb-1 text-sm font-semibold">🔍 Top Findings</p>
-                    <ul className="list-disc pl-5 text-sm text-slate-700">
-                      {keyFindings.top_findings?.map((item, idx) => (
-                        <li key={`${item}-${idx}`}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  {!!keyFindings.watch_out_for?.length && (
-                    <div>
-                      <p className="mb-1 text-sm font-semibold">⚠️ Watch Out For</p>
-                      <ul className="list-disc pl-5 text-sm text-slate-700">
-                        {keyFindings.watch_out_for.map((item, idx) => (
-                          <li key={`${item}-${idx}`}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div className="rounded-xl border bg-white p-4 shadow-sm">
-              <h2 className="mb-2 text-lg font-semibold">Dataset Summary Card</h2>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-                <div><span className="text-xs text-slate-500">Rows</span><p className="font-semibold">{summary.rows}</p></div>
-                <div><span className="text-xs text-slate-500">Columns</span><p className="font-semibold">{summary.columns}</p></div>
-                <div><span className="text-xs text-slate-500">Memory</span><p className="font-semibold">{summary.memory_mb} MB</p></div>
-                <div><span className="text-xs text-slate-500">Quality Score</span><p className="font-semibold">{summary.quality_score}</p></div>
-                <div><span className="text-xs text-slate-500">Types</span><p className="font-semibold">{Object.entries(summary.type_breakdown).map(([k, v]) => `${k}:${v}`).join(' | ')}</p></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[300px_1fr]">
-              <aside className="rounded-xl border bg-white p-3 shadow-sm">
-                <h3 className="mb-2 font-semibold">Columns</h3>
-                <button
-                  onClick={() => setAttentionOnly((prev) => !prev)}
-                  className="mb-3 w-full rounded border bg-slate-50 px-3 py-2 text-left text-sm"
-                >
-                  {healthStats.flagged} of {healthStats.total} columns need attention
+              <div className="flex items-center gap-3">
+                <button onClick={uploadFile} disabled={!file || uploading}
+                  className="rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:opacity-40">
+                  {uploading ? `Uploading ${uploadProgress}%…` : 'Upload'}
                 </button>
-                {attentionOnly && <p className="mb-2 text-xs text-amber-700">Showing only 🟡/🔴 columns</p>}
-
-                <div className="space-y-2">
-                  {visibleColumns.map((column) => (
-                    <button
-                      key={column.name}
-                      onClick={() => fetchColumnStats(column.name)}
-                      className={`w-full rounded border px-3 py-2 text-left ${selectedColumn === column.name ? 'border-blue-500 bg-blue-50' : 'border-slate-200'}`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium">
-                          {(column.health?.overall?.dot || '🟢')} {column.name}
-                        </span>
-                        <span className="rounded bg-slate-100 px-2 py-0.5 text-xs">{column.inferred_type}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </aside>
-
-              <main className="rounded-xl border bg-white p-4 shadow-sm">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <h3 className="text-lg font-semibold">Column Detail Panel</h3>
-                  {columnStats && (
-                    <select
-                      value={columnStats.inferred_type}
-                      onChange={(e) => updateType(columnStats.column, e.target.value)}
-                      className="rounded border px-3 py-2 text-sm"
-                    >
-                      {typeOptions.map((typeOption) => (
-                        <option key={typeOption} value={typeOption}>{typeOption}</option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-
-                {columnStats && (
-                  <>
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {[
-                        columnStats.health?.missing,
-                        columnStats.health?.outliers,
-                        columnStats.health?.distribution,
-                        columnStats.health?.cardinality,
-                      ]
-                        .filter((item) => !!item && item?.status !== 'na')
-                        .map((item, index) => (
-                          <span key={`${item?.label}-${index}`} className={`rounded border px-2 py-1 text-xs ${badgeClass(item?.status || 'good')}`}>
-                            {item?.dot} {item?.label}
-                          </span>
-                        ))}
-                    </div>
-
-                    {!hideRaw && (
-                      <div className="mb-3">
-                        <button onClick={() => setShowRawStats((prev) => !prev)} className="rounded border px-3 py-1 text-sm">
-                          {showRawStats ? 'Hide raw stats' : 'Show raw stats'}
-                        </button>
-                      </div>
-                    )}
-
-                    {!hideRaw && showRawStats && (
-                      <div className="mb-4 overflow-x-auto rounded border">
-                        <table className="min-w-full text-sm">
-                          <tbody>
-                            {Object.entries(columnStats)
-                              .filter(([key]) => !['top_10', 'frequency_table', 'observations_per_period', 'health', 'ai_summary'].includes(key))
-                              .map(([key, value]) => (
-                                <tr key={key} className="border-b">
-                                  <td className="bg-slate-50 px-3 py-2 font-medium">{key}</td>
-                                  <td className="px-3 py-2">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                      {columnStats.chart_histogram_url && <img src={chartUrl(columnStats.chart_histogram_url)} alt="Histogram" className="w-full rounded border bg-white" />}
-                      {columnStats.chart_boxplot_url && <img src={chartUrl(columnStats.chart_boxplot_url)} alt="Boxplot" className="w-full rounded border bg-white" />}
-                      {columnStats.chart_bar_url && <img src={chartUrl(columnStats.chart_bar_url)} alt="Bar chart" className="w-full rounded border bg-white lg:col-span-2" />}
-                      {columnStats.chart_line_url && <img src={chartUrl(columnStats.chart_line_url)} alt="Time trend" className="w-full rounded border bg-white lg:col-span-2" />}
-                    </div>
-
-                    <div className="mt-4 rounded bg-blue-50 p-3 text-sm text-slate-800 space-y-3">
-                      <div>
-                        <p className="font-medium">What does this look like?</p>
-                        <p>{columnStats.ai_summary?.what_does_this_look_like || 'Summary pending'}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">Anything unusual?</p>
-                        <p>{columnStats.ai_summary?.anything_unusual || 'No unusual pattern highlighted yet.'}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">What should I do?</p>
-                        <p>{columnStats.ai_summary?.what_should_i_do || 'No action recommendation available yet.'}</p>
-                      </div>
-                    </div>
-                  </>
+                {uploadMeta && !showAnalysisOptions && (
+                  <button onClick={() => isLargeFile ? setShowAnalysisOptions(true) : void startAnalysis('auto')} disabled={!canAnalyze || runningAnalysis}
+                    className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-40">
+                    {runningAnalysis ? 'Analyzing…' : 'Start Analysis'}
+                  </button>
                 )}
-              </main>
-            </div>
-
-            <div className="rounded-xl border bg-white p-4 shadow-sm">
-              <h3 className="mb-3 font-semibold">Export Controls</h3>
-              <div className="flex flex-wrap gap-3">
-                <button onClick={createPdf} className="rounded bg-slate-900 px-4 py-2 text-white">Download PDF Report</button>
-                <button onClick={downloadExcel} className="rounded bg-slate-700 px-4 py-2 text-white">Download Excel</button>
-                <button onClick={downloadCleanedCsv} className="rounded bg-slate-700 px-4 py-2 text-white">Download Cleaned CSV</button>
-                {viewMode === 'analyst' && (
-                  <button onClick={downloadStatsJson} className="rounded bg-slate-700 px-4 py-2 text-white">Download Raw JSON Stats</button>
+                {!!uploadMeta?.sheet_names?.length && (
+                  <select value={uploadMeta.active_sheet || ''} onChange={(e) => setUploadMeta((p) => (p ? { ...p, active_sheet: e.target.value } : p))}
+                    className="rounded-xl bg-white px-3 py-2.5 text-sm ring-1 ring-gray-200">
+                    {uploadMeta.sheet_names.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
                 )}
-                <button onClick={createShare} className="rounded bg-indigo-600 px-4 py-2 text-white">Copy Share Link</button>
-              </div>
-              {sharePath && <p className="mt-3 text-sm text-emerald-700">Copied: {sharePath}</p>}
-            </div>
-
-            <div className="rounded-xl border bg-white p-4 shadow-sm">
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-semibold">💬 Ask About Your Data</h3>
-                <button className="rounded border px-3 py-1 text-sm" onClick={() => setChatOpen((prev) => !prev)}>
-                  {chatOpen ? 'Collapse' : 'Open'}
-                </button>
               </div>
 
-              {chatOpen && (
-                <>
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {starterPrompts.map((prompt) => (
-                      <button
-                        key={prompt}
-                        onClick={() => void sendChatMessage(prompt)}
-                        className="rounded-full border bg-slate-50 px-3 py-1 text-xs"
-                      >
-                        {prompt}
+              {/* ── Analysis Options Panel ── */}
+              {uploadMeta && showAnalysisOptions && !runningAnalysis && (
+                <motion.div {...fade} className="rounded-2xl bg-white p-6 ring-1 ring-gray-200 space-y-5">
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900">How would you like to analyze this data?</h3>
+                    {rowEstimate && (
+                      <p className="mt-1 text-sm text-gray-500">
+                        Your file has ~{rowEstimate.toLocaleString()} rows. Choose a mode to balance speed and depth.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    {([['quick', '⚡ Quick Summary', 'Overall trends, correlations & stats — no charts. Fastest.'],
+                       ['focused', '🎯 Focus Columns', 'Pick specific columns for charts. Good for large files.'],
+                       ['full', '🔬 Full Analysis', 'Every column gets charts & AI summaries. Slowest.']
+                    ] as const).map(([mode, title, desc]) => (
+                      <button key={mode} onClick={() => setAnalysisMode(mode)}
+                        className={`rounded-xl p-4 text-left transition ring-1 ${
+                          analysisMode === mode
+                            ? 'bg-blue-50 ring-blue-300'
+                            : 'bg-gray-50 ring-gray-200 hover:ring-gray-300'
+                        }`}>
+                        <p className="text-sm font-semibold text-gray-900">{title}</p>
+                        <p className="mt-1 text-xs text-gray-500">{desc}</p>
+                        {mode === 'quick' && isLargeFile && (
+                          <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">Recommended</span>
+                        )}
                       </button>
                     ))}
                   </div>
 
-                  <div className="mb-3 h-56 overflow-y-auto rounded border bg-slate-50 p-3 text-sm">
-                    {chatMessages.length === 0 && <p className="text-slate-500">Ask a question about this dataset.</p>}
-                    {chatMessages.map((message, index) => (
-                      <div key={`${message.role}-${index}`} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                        <span className={`inline-block rounded px-3 py-2 ${message.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white border'}`}>
-                          {message.content}
-                        </span>
+                  {/* Column selection for focused mode */}
+                  {analysisMode === 'focused' && detectedColumns.length > 0 && (
+                    <div>
+                      <p className="mb-2 text-sm font-medium text-gray-700">Select columns for detailed analysis:</p>
+                      <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+                        {detectedColumns.map((col) => (
+                          <button key={col}
+                            onClick={() => setFocusColumns((prev) => prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col])}
+                            className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                              focusColumns.includes(col)
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}>
+                            {col}
+                          </button>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                      {focusColumns.length > 0 && (
+                        <p className="mt-2 text-xs text-gray-400">{focusColumns.length} selected — other columns get quick stats only</p>
+                      )}
+                    </div>
+                  )}
+                  {analysisMode === 'focused' && detectedColumns.length === 0 && (
+                    <p className="text-sm text-gray-500">Column names will be detected during analysis. All columns will get quick stats, and you can drill into any column later.</p>
+                  )}
 
-                  <div className="flex gap-2">
-                    <input
-                      value={chatInput}
-                      onChange={(event) => setChatInput(event.target.value)}
-                      onKeyDown={onChatEnter}
-                      placeholder="Type your question..."
-                      className="flex-1 rounded border px-3 py-2"
-                    />
+                  <div className="flex items-center gap-3">
                     <button
-                      onClick={() => void sendChatMessage(chatInput)}
-                      disabled={!chatInput.trim() || chatLoading}
-                      className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-                    >
-                      Send
+                      onClick={() => void startAnalysis()}
+                      disabled={!canAnalyze || (analysisMode === 'focused' && focusColumns.length === 0 && detectedColumns.length > 0)}
+                      className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:opacity-40">
+                      Start {analysisMode === 'quick' ? 'Quick' : analysisMode === 'focused' ? 'Focused' : 'Full'} Analysis
+                    </button>
+                    <button onClick={() => { setShowAnalysisOptions(false); setAnalysisMode('auto') }}
+                      className="text-sm text-gray-500 hover:text-gray-700">
+                      Cancel
                     </button>
                   </div>
-                </>
+                </motion.div>
               )}
+
+              {uploading && (
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                  <motion.div className="h-full rounded-full bg-blue-600" initial={{ width: 0 }} animate={{ width: `${uploadProgress}%` }} />
+                </div>
+              )}
+              {runningAnalysis && (
+                <div className="flex items-center gap-3 rounded-2xl bg-blue-50 p-4 text-sm text-blue-800">
+                  <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
+                  Analyzing your data — this may take a moment for large files…
+                </div>
+              )}
+              {error && <p className="text-sm text-red-600">{error}</p>}
+            </motion.div>
+          )}
+
+          {/* ════════════════════════════════════════════════════════════
+             DASHBOARD VIEW — Bento Grid
+             ════════════════════════════════════════════════════════════ */}
+          {summary && (
+            <motion.div key="dashboard" {...fade} className="space-y-6">
+
+              {/* ── Row 1: Insight Banner (Hero) ── */}
+              {keyFindings && (
+                <section className="rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-8">
+                  <p className="text-sm font-semibold uppercase tracking-wider text-indigo-500">Key Insight</p>
+                  <h2 className="mt-2 text-2xl font-bold leading-snug text-gray-900 md:text-3xl">
+                    {keyFindings.whats_in_this_data}
+                  </h2>
+                  {keyFindings.suggested_next_step && (
+                    <p className="mt-3 text-sm text-gray-500">
+                      <span className="font-medium text-gray-700">Next step:</span> {keyFindings.suggested_next_step}
+                    </p>
+                  )}
+                </section>
+              )}
+
+              {/* ── Row 2: KPI Cards ── */}
+              <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <KpiCard
+                  label="Data Health"
+                  value={gradeFromScore(summary.quality_score)}
+                  sub={
+                    <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${qualityLabel(summary.quality_score).color}`}>
+                      {qualityLabel(summary.quality_score).text} ({summary.quality_score.toFixed(0)}%)
+                    </span>
+                  }
+                  icon="🛡️"
+                />
+                <KpiCard
+                  label="Dataset Size"
+                  value={`${summary.rows.toLocaleString()} rows`}
+                  sub={<span className="text-xs text-gray-400">{summary.columns} columns · {summary.memory_mb} MB</span>}
+                  icon="📋"
+                />
+                <KpiCard
+                  label="Top Category"
+                  value={topCategory || 'N/A'}
+                  sub={<span className="text-xs text-gray-400">{Object.entries(summary.type_breakdown).map(([k, v]) => `${v} ${k}`).join(', ')}</span>}
+                  icon="📊"
+                />
+                <KpiCard
+                  label="Anomalies"
+                  value={healthStats.flagged > 0 ? `${healthStats.flagged} found` : 'None'}
+                  sub={
+                    healthStats.flagged > 0
+                      ? <span className="text-xs text-amber-600">{healthStats.flagged} of {healthStats.total} columns need attention</span>
+                      : <span className="text-xs text-emerald-600">✓ All columns look healthy</span>
+                  }
+                  icon="⚠️"
+                />
+              </section>
+
+              {/* ── Row 3a: Trends (shown for quick/focused mode) ── */}
+              {summary.trends && (
+                <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {/* Correlations */}
+                  {summary.trends.top_correlations && summary.trends.top_correlations.length > 0 && (
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h3 className="mb-3 text-sm font-semibold text-gray-900">🔗 Top Correlations</h3>
+                      <div className="space-y-2">
+                        {summary.trends.top_correlations.map((c, i) => (
+                          <div key={i} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600 truncate">{c.col_a} ↔ {c.col_b}</span>
+                            <span className={`font-mono text-xs font-semibold ${
+                              Math.abs(c.r) > 0.7 ? 'text-red-600' : Math.abs(c.r) > 0.4 ? 'text-amber-600' : 'text-gray-500'
+                            }`}>{c.r > 0 ? '+' : ''}{c.r}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Numeric summaries */}
+                  {summary.trends.numeric_summaries && summary.trends.numeric_summaries.length > 0 && (
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h3 className="mb-3 text-sm font-semibold text-gray-900">📈 Numeric Trends</h3>
+                      <div className="space-y-2">
+                        {summary.trends.numeric_summaries.slice(0, 6).map((n, i) => (
+                          <div key={i} className="text-sm">
+                            <span className="font-medium text-gray-800">{n.column}</span>
+                            <span className="ml-2 text-xs text-gray-400">
+                              mean {n.mean.toLocaleString()} · median {n.median.toLocaleString()} · skew {n.skew}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Category dominance */}
+                  {summary.trends.category_dominance && summary.trends.category_dominance.length > 0 && (
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h3 className="mb-3 text-sm font-semibold text-gray-900">📊 Category Leaders</h3>
+                      <div className="space-y-2">
+                        {summary.trends.category_dominance.slice(0, 6).map((d, i) => (
+                          <div key={i} className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600 truncate">{d.column}</span>
+                            <span className="text-xs">
+                              <span className="font-medium text-gray-800">{d.top_value}</span>
+                              <span className={`ml-1 ${d.top_pct > 60 ? 'text-amber-600' : 'text-gray-400'}`}>{d.top_pct}%</span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Time ranges */}
+                  {summary.trends.time_ranges && summary.trends.time_ranges.length > 0 && (
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h3 className="mb-3 text-sm font-semibold text-gray-900">📅 Time Ranges</h3>
+                      <div className="space-y-2">
+                        {summary.trends.time_ranges.map((t, i) => (
+                          <div key={i} className="text-sm">
+                            <span className="font-medium text-gray-800">{t.column}</span>
+                            <p className="text-xs text-gray-400">{t.from} → {t.to} ({t.span_days.toLocaleString()} days)</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {/* ── Row 3b: Key findings details ── */}
+              {keyFindings && (keyFindings.top_findings?.length > 0 || keyFindings.watch_out_for?.length > 0) && (
+                <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {keyFindings.top_findings?.length > 0 && (
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h3 className="mb-3 text-sm font-semibold text-gray-900">🔍 Top Findings</h3>
+                      <ul className="space-y-2">
+                        {keyFindings.top_findings.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                            <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-400" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {keyFindings.watch_out_for?.length > 0 && (
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h3 className="mb-3 text-sm font-semibold text-gray-900">⚠️ Watch Out For</h3>
+                      <ul className="space-y-2">
+                        {keyFindings.watch_out_for.map((item, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                            <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-400" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {/* ── Row 4: Column pills (replaces sidebar) ── */}
+              <section className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-900">Columns</h3>
+                  <span className="text-xs text-gray-400">{columns.length} total</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {columns.map((col) => {
+                    const isSelected = selectedColumn === col.name
+                    const dot = col.health?.overall?.dot || '🟢'
+                    const isFlag = ['warning', 'critical'].includes(col.health?.overall?.status || 'good')
+                    return (
+                      <button
+                        key={col.name}
+                        onClick={() => fetchColumnStats(col.name)}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                          isSelected
+                            ? 'bg-gray-900 text-white'
+                            : isFlag
+                            ? 'bg-amber-50 text-amber-800 hover:bg-amber-100'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        <span className="text-[10px]">{dot}</span>
+                        {col.name}
+                        <span className={`rounded px-1 text-[10px] ${isSelected ? 'bg-gray-700 text-gray-300' : 'bg-white/60 text-gray-500'}`}>
+                          {col.inferred_type}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </section>
+
+              {/* ── Row 5: Deep Dive — 2/3 chart + 1/3 context ── */}
+              {columnStats && (
+                <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                  {/* Left: Charts (2/3) */}
+                  <div className="space-y-4 lg:col-span-2">
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <div className="mb-4 flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-900">Deep Dive: {columnStats.column}</h3>
+                          <p className="mt-0.5 text-xs text-gray-400">Auto-selected visualization based on column type</p>
+                        </div>
+                        {viewMode === 'analyst' && (
+                          <select
+                            value={columnStats.inferred_type}
+                            onChange={(e) => updateType(columnStats.column, e.target.value)}
+                            className="rounded-lg bg-gray-50 px-2 py-1 text-xs ring-1 ring-gray-200"
+                          >
+                            {typeOptions.map((t) => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        )}
+                      </div>
+
+                      {/* Health badges */}
+                      <div className="mb-4 flex flex-wrap gap-1.5">
+                        {[columnStats.health?.missing, columnStats.health?.outliers, columnStats.health?.distribution, columnStats.health?.cardinality]
+                          .filter((h) => !!h && h?.status !== 'na')
+                          .map((h, i) => (
+                            <span key={i} className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                              h?.status === 'critical' ? 'bg-red-50 text-red-700'
+                              : h?.status === 'warning' ? 'bg-amber-50 text-amber-700'
+                              : 'bg-emerald-50 text-emerald-700'
+                            }`}>
+                              {h?.dot} {h?.label}
+                            </span>
+                          ))}
+                      </div>
+
+                      {/* Charts */}
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        {columnStats.chart_histogram_url && (
+                          <img src={chartUrl(columnStats.chart_histogram_url)} alt="Distribution" className="w-full rounded-xl" />
+                        )}
+                        {columnStats.chart_boxplot_url && (
+                          <img src={chartUrl(columnStats.chart_boxplot_url)} alt="Box plot" className="w-full rounded-xl" />
+                        )}
+                        {columnStats.chart_bar_url && (
+                          <img src={chartUrl(columnStats.chart_bar_url)} alt="Categories" className="w-full rounded-xl md:col-span-2" />
+                        )}
+                        {columnStats.chart_line_url && (
+                          <img src={chartUrl(columnStats.chart_line_url)} alt="Time trend" className="w-full rounded-xl md:col-span-2" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Context panel (1/3) */}
+                  <div className="space-y-4">
+                    {/* AI Summary */}
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <h4 className="mb-3 text-sm font-semibold text-gray-900">💡 AI Summary</h4>
+                      <div className="space-y-3 text-sm text-gray-600">
+                        <div>
+                          <p className="font-medium text-gray-800">What does this look like?</p>
+                          <p className="mt-0.5">{columnStats.ai_summary?.what_does_this_look_like || 'Summary pending…'}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800">Anything unusual?</p>
+                          <p className="mt-0.5">{columnStats.ai_summary?.anything_unusual || 'No unusual patterns found.'}</p>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-800">What should I do?</p>
+                          <p className="mt-0.5">{columnStats.ai_summary?.what_should_i_do || 'No action needed right now.'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick stats */}
+                    <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-gray-900">📈 At a Glance</h4>
+                        {viewMode === 'analyst' && (
+                          <button onClick={() => setShowRawStats((p) => !p)} className="text-[11px] text-blue-600 hover:underline">
+                            {showRawStats ? 'Hide raw' : 'Show raw'}
+                          </button>
+                        )}
+                      </div>
+                      <div className="mt-3 space-y-2">
+                        {columnStats.inferred_type === 'numeric' && (
+                          <>
+                            <StatRow label="Mean" value={typeof columnStats.mean === 'number' ? columnStats.mean.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '–'} />
+                            <StatRow label="Median" value={typeof columnStats.median === 'number' ? columnStats.median.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '–'} />
+                            <StatRow label="Std Dev" value={typeof columnStats.std === 'number' ? columnStats.std.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '–'} />
+                            <StatRow label="Min" value={typeof columnStats.min === 'number' ? columnStats.min.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '–'} />
+                            <StatRow label="Max" value={typeof columnStats.max === 'number' ? columnStats.max.toLocaleString(undefined, { maximumFractionDigits: 2 }) : '–'} />
+                            <StatRow label="Outliers (IQR)" value={String(columnStats.outliers_iqr_count ?? '–')} />
+                          </>
+                        )}
+                        {columnStats.inferred_type === 'categorical' && (
+                          <>
+                            <StatRow label="Mode" value={String(columnStats.mode ?? '–')} />
+                            <StatRow label="Unique" value={String(columnStats.cardinality ?? columnStats.unique_count ?? '–')} />
+                          </>
+                        )}
+                        {columnStats.inferred_type === 'datetime' && (
+                          <>
+                            <StatRow label="From" value={String(columnStats.min_date ?? '–')} />
+                            <StatRow label="To" value={String(columnStats.max_date ?? '–')} />
+                            <StatRow label="Gaps" value={String(columnStats.gap_count ?? '–')} />
+                          </>
+                        )}
+                        <StatRow label="Missing" value={`${columnStats.missing_pct ?? 0}%`} />
+                      </div>
+
+                      {viewMode === 'analyst' && showRawStats && (
+                        <div className="mt-4 max-h-60 overflow-y-auto rounded-xl bg-gray-50 p-3 text-xs">
+                          <table className="w-full">
+                            <tbody>
+                              {Object.entries(columnStats)
+                                .filter(([k]) => !['top_10', 'frequency_table', 'observations_per_period', 'health', 'ai_summary', 'insight_summary'].includes(k))
+                                .map(([k, v]) => (
+                                  <tr key={k} className="border-b border-gray-100 last:border-0">
+                                    <td className="py-1.5 pr-3 font-medium text-gray-500">{k}</td>
+                                    <td className="py-1.5 text-gray-700">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </section>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+
+      {/* ════════════════════════════════════════════════════════════
+         Floating Action Bar (bottom-right)
+         ════════════════════════════════════════════════════════════ */}
+      {summary && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+          {/* Export / share popover */}
+          <AnimatePresence>
+            {fabOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                className="mb-1 flex flex-col gap-1.5 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-gray-200"
+              >
+                <FabButton label="📄 PDF Report" onClick={createPdf} />
+                <FabButton label="📊 Excel (Full)" onClick={() => downloadExcel()} />
+                {summary && summary.rows > 10_000 && (
+                  <FabButton label="📊 Excel (10K sample)" onClick={() => downloadExcel(10_000)} />
+                )}
+                <FabButton label="📁 Cleaned CSV" onClick={downloadCleanedCsv} />
+                {viewMode === 'analyst' && <FabButton label="{ } Raw JSON" onClick={downloadStatsJson} />}
+                <FabButton label="🔗 Copy Share Link" onClick={createShare} />
+                {sharePath && <p className="px-3 text-[10px] text-emerald-600">Copied!</p>}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setChatOpen((p) => !p)}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition hover:bg-gray-800"
+              title="Ask about your data"
+            >
+              💬
+            </button>
+            <button
+              onClick={() => setFabOpen((p) => !p)}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 text-white shadow-lg transition hover:bg-gray-800"
+              title="Export & share"
+            >
+              ↗
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════════════
+         Chat Drawer (slides up from bottom-right)
+         ════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {chatOpen && summary && (
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            className="fixed bottom-20 right-6 z-50 flex w-96 flex-col rounded-2xl bg-white shadow-2xl ring-1 ring-gray-200"
+            style={{ maxHeight: '28rem' }}
+          >
+            <div className="flex items-center justify-between border-b px-4 py-3">
+              <h4 className="text-sm font-semibold text-gray-900">💬 Ask About Your Data</h4>
+              <button onClick={() => setChatOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
-          </section>
+
+            {/* Starter chips */}
+            {chatMessages.length === 0 && (
+              <div className="flex flex-wrap gap-1.5 border-b px-4 py-3">
+                {starterPrompts.map((p) => (
+                  <button key={p} onClick={() => void sendChatMessage(p)}
+                    className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] text-gray-600 transition hover:bg-gray-200">{p}</button>
+                ))}
+              </div>
+            )}
+
+            <div className="flex-1 overflow-y-auto px-4 py-3 text-sm" style={{ maxHeight: '16rem' }}>
+              {chatMessages.length === 0 && <p className="text-gray-400">Ask a question about this dataset.</p>}
+              {chatMessages.map((m, i) => (
+                <div key={i} className={`mb-2 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
+                  <span className={`inline-block max-w-[85%] rounded-2xl px-3 py-2 ${
+                    m.role === 'user' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-800'
+                  }`}>{m.content}</span>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+
+            <div className="flex gap-2 border-t px-3 py-2.5">
+              <input
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={onChatEnter}
+                placeholder="Type your question…"
+                className="flex-1 rounded-xl bg-gray-50 px-3 py-2 text-sm outline-none ring-1 ring-gray-200 focus:ring-blue-300"
+              />
+              <button
+                onClick={() => void sendChatMessage(chatInput)}
+                disabled={!chatInput.trim() || chatLoading}
+                className="rounded-xl bg-gray-900 px-3 py-2 text-sm text-white disabled:opacity-40"
+              >
+                {chatLoading ? '…' : '→'}
+              </button>
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
+
+      {/* Footer */}
+      <footer className="py-6 text-center text-xs text-gray-400">
+        DataLens — Instant Automated Insights
+      </footer>
     </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Sub-components
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function KpiCard({ label, value, sub, icon }: { label: string; value: string; sub: React.ReactNode; icon: string }) {
+  return (
+    <motion.div {...fade} className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wider text-gray-400">{label}</p>
+          <p className="mt-1 text-xl font-bold text-gray-900">{value}</p>
+          <div className="mt-1">{sub}</div>
+        </div>
+        <span className="text-2xl">{icon}</span>
+      </div>
+    </motion.div>
+  )
+}
+
+function StatRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between border-b border-gray-50 py-1.5 last:border-0">
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs font-medium text-gray-900">{value}</span>
+    </div>
+  )
+}
+
+function FabButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full rounded-xl px-4 py-2 text-left text-xs font-medium text-gray-700 transition hover:bg-gray-50"
+    >
+      {label}
+    </button>
   )
 }
 

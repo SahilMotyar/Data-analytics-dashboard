@@ -1,0 +1,2730 @@
+{
+  "summary": {
+    "rows": 80020,
+    "columns": 23,
+    "memory_mb": 66.12,
+    "type_breakdown": {
+      "numeric": 8,
+      "categorical": 15
+    },
+    "quality_score": 99.5
+  },
+  "columns": [
+    {
+      "name": "Patient ID",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": true
+      }
+    },
+    {
+      "name": "Age",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "survival_time",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "treatment delays",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Sex",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Race",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Primary.Site",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Grade",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Laterality",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "ICD-O-3",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "T",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "N",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "M",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Stage",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Surgery",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Radiation",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Chemotherapy",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "OS",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "CSS",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Marital status",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "income",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "County",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "event",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Many outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    }
+  ],
+  "column_stats": {
+    "Patient ID": {
+      "column": "Patient ID",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 35013399.25326,
+      "median": 35732080.0,
+      "mode": 839354.0,
+      "std": 18661447.18944816,
+      "variance": 348249611204562.56,
+      "min": 839354.0,
+      "max": 63171873.0,
+      "range": 62332519.0,
+      "q1": 20181232.0,
+      "q2": 35732080.0,
+      "q3": 50044011.25,
+      "iqr": 29862779.25,
+      "skewness": -0.20238908421360277,
+      "kurtosis": -1.1151454972720471,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Patient_ID_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Patient_ID_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 35732080.0 while the average is 35013399.25326. Values span from 839354.0 to 63171873.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 35732080.0 while the average is 35013399.25326. Values span from 839354.0 to 63171873.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Age": {
+      "column": "Age",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 66.347,
+      "median": 67.0,
+      "mode": 68.0,
+      "std": 9.948111896164317,
+      "variance": 98.96493029860599,
+      "min": 19.0,
+      "max": 84.0,
+      "range": 65.0,
+      "q1": 60.0,
+      "q2": 67.0,
+      "q3": 74.0,
+      "iqr": 14.0,
+      "skewness": -0.4314739807047768,
+      "kurtosis": -0.057920232737565414,
+      "outliers_iqr_count": 275,
+      "outliers_zscore_count": 197,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Age_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Age_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 67.0 while the average is 66.347. Values span from 19.0 to 84.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 275 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 67.0 while the average is 66.347. Values span from 19.0 to 84.0 with 0.0% missing entries. There are 275 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "survival_time": {
+      "column": "survival_time",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 30.0817,
+      "median": 17.0,
+      "mode": 2.0,
+      "std": 30.721426744720446,
+      "variance": 943.8060612312247,
+      "min": 0.0,
+      "max": 119.0,
+      "range": 119.0,
+      "q1": 6.0,
+      "q2": 17.0,
+      "q3": 51.0,
+      "iqr": 45.0,
+      "skewness": 1.071350484062468,
+      "kurtosis": 0.07187487179231988,
+      "outliers_iqr_count": 70,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/survival_time_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/survival_time_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 17.0 while the average is 30.0817. Values span from 0.0 to 119.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 70 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 17.0 while the average is 30.0817. Values span from 0.0 to 119.0 with 0.0% missing entries. There are 70 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "treatment delays": {
+      "column": "treatment delays",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 1.11658,
+      "median": 1.0,
+      "mode": 1.0,
+      "std": 1.10813973084321,
+      "variance": 1.2279736630732616,
+      "min": 0.0,
+      "max": 6.0,
+      "range": 6.0,
+      "q1": 0.0,
+      "q2": 1.0,
+      "q3": 2.0,
+      "iqr": 2.0,
+      "skewness": 1.342833188167725,
+      "kurtosis": 2.456243489377598,
+      "outliers_iqr_count": 263,
+      "outliers_zscore_count": 774,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/treatment_delays_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/treatment_delays_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 1.0 while the average is 1.11658. Values span from 0.0 to 6.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 263 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 1.0 while the average is 1.11658. Values span from 0.0 to 6.0 with 0.0% missing entries. There are 263 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Sex": {
+      "column": "Sex",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Male",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "Male",
+          "count": 26451,
+          "pct": 52.9
+        },
+        {
+          "value": "Female",
+          "count": 23549,
+          "pct": 47.1
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Male",
+          "count": 26451,
+          "pct": 52.9
+        },
+        {
+          "value": "Female",
+          "count": 23549,
+          "pct": 47.1
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Sex_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Male with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Male with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Race": {
+      "column": "Race",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "White",
+      "cardinality": 4,
+      "unique_count": 4,
+      "top_10": [
+        {
+          "value": "White",
+          "count": 39790,
+          "pct": 79.58
+        },
+        {
+          "value": "Black",
+          "count": 5727,
+          "pct": 11.45
+        },
+        {
+          "value": "other",
+          "count": 4399,
+          "pct": 8.8
+        },
+        {
+          "value": "Unknown",
+          "count": 84,
+          "pct": 0.17
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "White",
+          "count": 39790,
+          "pct": 79.58
+        },
+        {
+          "value": "Black",
+          "count": 5727,
+          "pct": 11.45
+        },
+        {
+          "value": "other",
+          "count": 4399,
+          "pct": 8.8
+        },
+        {
+          "value": "Unknown",
+          "count": 84,
+          "pct": 0.17
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Race_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is White with 0.0% missing values.",
+        "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is White with 0.0% missing values. It has 4 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Primary.Site": {
+      "column": "Primary.Site",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "C34.1",
+      "cardinality": 5,
+      "unique_count": 5,
+      "top_10": [
+        {
+          "value": "C34.1",
+          "count": 28170,
+          "pct": 56.34
+        },
+        {
+          "value": "C34.3",
+          "count": 13804,
+          "pct": 27.61
+        },
+        {
+          "value": "other",
+          "count": 3900,
+          "pct": 7.8
+        },
+        {
+          "value": "C34.2",
+          "count": 2214,
+          "pct": 4.43
+        },
+        {
+          "value": "C34.0",
+          "count": 1912,
+          "pct": 3.82
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "C34.1",
+          "count": 28170,
+          "pct": 56.34
+        },
+        {
+          "value": "C34.3",
+          "count": 13804,
+          "pct": 27.61
+        },
+        {
+          "value": "other",
+          "count": 3900,
+          "pct": 7.8
+        },
+        {
+          "value": "C34.2",
+          "count": 2214,
+          "pct": 4.43
+        },
+        {
+          "value": "C34.0",
+          "count": 1912,
+          "pct": 3.82
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Primary_Site_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is C34.1 with 0.0% missing values.",
+        "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is C34.1 with 0.0% missing values. It has 5 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Grade": {
+      "column": "Grade",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Unknown",
+      "cardinality": 5,
+      "unique_count": 5,
+      "top_10": [
+        {
+          "value": "Unknown",
+          "count": 19386,
+          "pct": 38.77
+        },
+        {
+          "value": "III",
+          "count": 14505,
+          "pct": 29.01
+        },
+        {
+          "value": "II",
+          "count": 12331,
+          "pct": 24.66
+        },
+        {
+          "value": "I",
+          "count": 3511,
+          "pct": 7.02
+        },
+        {
+          "value": "IV",
+          "count": 267,
+          "pct": 0.53
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Unknown",
+          "count": 19386,
+          "pct": 38.77
+        },
+        {
+          "value": "III",
+          "count": 14505,
+          "pct": 29.01
+        },
+        {
+          "value": "II",
+          "count": 12331,
+          "pct": 24.66
+        },
+        {
+          "value": "I",
+          "count": 3511,
+          "pct": 7.02
+        },
+        {
+          "value": "IV",
+          "count": 267,
+          "pct": 0.53
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Grade_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Unknown with 0.0% missing values.",
+        "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Unknown with 0.0% missing values. It has 5 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Laterality": {
+      "column": "Laterality",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Right",
+      "cardinality": 3,
+      "unique_count": 3,
+      "top_10": [
+        {
+          "value": "Right",
+          "count": 29093,
+          "pct": 58.19
+        },
+        {
+          "value": "Left",
+          "count": 20098,
+          "pct": 40.2
+        },
+        {
+          "value": "other",
+          "count": 809,
+          "pct": 1.62
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Right",
+          "count": 29093,
+          "pct": 58.19
+        },
+        {
+          "value": "Left",
+          "count": 20098,
+          "pct": 40.2
+        },
+        {
+          "value": "other",
+          "count": 809,
+          "pct": 1.62
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Laterality_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Right with 0.0% missing values.",
+        "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Right with 0.0% missing values. It has 3 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "ICD-O-3": {
+      "column": "ICD-O-3",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "LUAD",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "LUAD",
+          "count": 33634,
+          "pct": 67.27
+        },
+        {
+          "value": "LUSC",
+          "count": 16366,
+          "pct": 32.73
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "LUAD",
+          "count": 33634,
+          "pct": 67.27
+        },
+        {
+          "value": "LUSC",
+          "count": 16366,
+          "pct": 32.73
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/ICD-O-3_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is LUAD with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is LUAD with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "T": {
+      "column": "T",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "T2",
+      "cardinality": 4,
+      "unique_count": 4,
+      "top_10": [
+        {
+          "value": "T2",
+          "count": 15701,
+          "pct": 31.4
+        },
+        {
+          "value": "T1",
+          "count": 11859,
+          "pct": 23.72
+        },
+        {
+          "value": "T4",
+          "count": 11635,
+          "pct": 23.27
+        },
+        {
+          "value": "T3",
+          "count": 10805,
+          "pct": 21.61
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "T2",
+          "count": 15701,
+          "pct": 31.4
+        },
+        {
+          "value": "T1",
+          "count": 11859,
+          "pct": 23.72
+        },
+        {
+          "value": "T4",
+          "count": 11635,
+          "pct": 23.27
+        },
+        {
+          "value": "T3",
+          "count": 10805,
+          "pct": 21.61
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/T_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is T2 with 0.0% missing values.",
+        "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is T2 with 0.0% missing values. It has 4 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "N": {
+      "column": "N",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "N0",
+      "cardinality": 4,
+      "unique_count": 4,
+      "top_10": [
+        {
+          "value": "N0",
+          "count": 20806,
+          "pct": 41.61
+        },
+        {
+          "value": "N2",
+          "count": 17194,
+          "pct": 34.39
+        },
+        {
+          "value": "N3",
+          "count": 7184,
+          "pct": 14.37
+        },
+        {
+          "value": "N1",
+          "count": 4816,
+          "pct": 9.63
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "N0",
+          "count": 20806,
+          "pct": 41.61
+        },
+        {
+          "value": "N2",
+          "count": 17194,
+          "pct": 34.39
+        },
+        {
+          "value": "N3",
+          "count": 7184,
+          "pct": 14.37
+        },
+        {
+          "value": "N1",
+          "count": 4816,
+          "pct": 9.63
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/N_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is N0 with 0.0% missing values.",
+        "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is N0 with 0.0% missing values. It has 4 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "M": {
+      "column": "M",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "M0",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "M0",
+          "count": 27579,
+          "pct": 55.16
+        },
+        {
+          "value": "M1",
+          "count": 22421,
+          "pct": 44.84
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "M0",
+          "count": 27579,
+          "pct": 55.16
+        },
+        {
+          "value": "M1",
+          "count": 22421,
+          "pct": 44.84
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/M_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is M0 with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is M0 with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Stage": {
+      "column": "Stage",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "IV",
+      "cardinality": 4,
+      "unique_count": 4,
+      "top_10": [
+        {
+          "value": "IV",
+          "count": 22421,
+          "pct": 44.84
+        },
+        {
+          "value": "III",
+          "count": 13449,
+          "pct": 26.9
+        },
+        {
+          "value": "I",
+          "count": 10670,
+          "pct": 21.34
+        },
+        {
+          "value": "II",
+          "count": 3460,
+          "pct": 6.92
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "IV",
+          "count": 22421,
+          "pct": 44.84
+        },
+        {
+          "value": "III",
+          "count": 13449,
+          "pct": 26.9
+        },
+        {
+          "value": "I",
+          "count": 10670,
+          "pct": 21.34
+        },
+        {
+          "value": "II",
+          "count": 3460,
+          "pct": 6.92
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Stage_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is IV with 0.0% missing values.",
+        "anything_unusual": "It has 4 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is IV with 0.0% missing values. It has 4 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Surgery": {
+      "column": "Surgery",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 0.32918,
+      "median": 0.0,
+      "mode": 0.0,
+      "std": 0.46992014651308783,
+      "variance": 0.22082494409888195,
+      "min": 0.0,
+      "max": 1.0,
+      "range": 1.0,
+      "q1": 0.0,
+      "q2": 0.0,
+      "q3": 1.0,
+      "iqr": 1.0,
+      "skewness": 0.7270462198349913,
+      "kurtosis": -1.4714626543299019,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Surgery_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Surgery_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 0.0 while the average is 0.32918. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 0.0 while the average is 0.32918. Values span from 0.0 to 1.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Radiation": {
+      "column": "Radiation",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 0.51174,
+      "median": 1.0,
+      "mode": 1.0,
+      "std": 0.49986715209482896,
+      "variance": 0.24986716974339485,
+      "min": 0.0,
+      "max": 1.0,
+      "range": 1.0,
+      "q1": 0.0,
+      "q2": 1.0,
+      "q3": 1.0,
+      "iqr": 1.0,
+      "skewness": -0.04697435936561577,
+      "kurtosis": -1.9978733260953296,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Radiation_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Radiation_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 1.0 while the average is 0.51174. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 1.0 while the average is 0.51174. Values span from 0.0 to 1.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Chemotherapy": {
+      "column": "Chemotherapy",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 0.58798,
+      "median": 1.0,
+      "mode": 1.0,
+      "std": 0.4922035807339253,
+      "variance": 0.24226436488729772,
+      "min": 0.0,
+      "max": 1.0,
+      "range": 1.0,
+      "q1": 0.0,
+      "q2": 1.0,
+      "q3": 1.0,
+      "iqr": 1.0,
+      "skewness": -0.35750865204833016,
+      "kurtosis": -1.8722624558089105,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Chemotherapy_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Chemotherapy_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 1.0 while the average is 0.58798. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 1.0 while the average is 0.58798. Values span from 0.0 to 1.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "OS": {
+      "column": "OS",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Dead",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "Dead",
+          "count": 39085,
+          "pct": 78.17
+        },
+        {
+          "value": "Alive",
+          "count": 10915,
+          "pct": 21.83
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Dead",
+          "count": 39085,
+          "pct": 78.17
+        },
+        {
+          "value": "Alive",
+          "count": 10915,
+          "pct": 21.83
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/OS_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Dead with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Dead with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "CSS": {
+      "column": "CSS",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Cancer dead",
+      "cardinality": 3,
+      "unique_count": 3,
+      "top_10": [
+        {
+          "value": "Cancer dead",
+          "count": 33541,
+          "pct": 67.08
+        },
+        {
+          "value": "Alive",
+          "count": 10915,
+          "pct": 21.83
+        },
+        {
+          "value": "Dead",
+          "count": 5544,
+          "pct": 11.09
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Cancer dead",
+          "count": 33541,
+          "pct": 67.08
+        },
+        {
+          "value": "Alive",
+          "count": 10915,
+          "pct": 21.83
+        },
+        {
+          "value": "Dead",
+          "count": 5544,
+          "pct": 11.09
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/CSS_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Cancer dead with 0.0% missing values.",
+        "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Cancer dead with 0.0% missing values. It has 3 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Marital status": {
+      "column": "Marital status",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Married",
+      "cardinality": 3,
+      "unique_count": 3,
+      "top_10": [
+        {
+          "value": "Married",
+          "count": 37896,
+          "pct": 75.79
+        },
+        {
+          "value": "Single",
+          "count": 10021,
+          "pct": 20.04
+        },
+        {
+          "value": "Unknown",
+          "count": 2083,
+          "pct": 4.17
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Married",
+          "count": 37896,
+          "pct": 75.79
+        },
+        {
+          "value": "Single",
+          "count": 10021,
+          "pct": 20.04
+        },
+        {
+          "value": "Unknown",
+          "count": 2083,
+          "pct": 4.17
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/Marital_status_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Married with 0.0% missing values.",
+        "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Married with 0.0% missing values. It has 3 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "income": {
+      "column": "income",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "55-75K",
+      "cardinality": 5,
+      "unique_count": 5,
+      "top_10": [
+        {
+          "value": "55-75K",
+          "count": 21648,
+          "pct": 43.3
+        },
+        {
+          "value": "35-55K",
+          "count": 14300,
+          "pct": 28.6
+        },
+        {
+          "value": "75K+",
+          "count": 12600,
+          "pct": 25.2
+        },
+        {
+          "value": "35K-",
+          "count": 1449,
+          "pct": 2.9
+        },
+        {
+          "value": "Unknown",
+          "count": 3,
+          "pct": 0.01
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "55-75K",
+          "count": 21648,
+          "pct": 43.3
+        },
+        {
+          "value": "35-55K",
+          "count": 14300,
+          "pct": 28.6
+        },
+        {
+          "value": "75K+",
+          "count": 12600,
+          "pct": 25.2
+        },
+        {
+          "value": "35K-",
+          "count": 1449,
+          "pct": 2.9
+        },
+        {
+          "value": "Unknown",
+          "count": 3,
+          "pct": 0.01
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/income_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is 55-75K with 0.0% missing values.",
+        "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is 55-75K with 0.0% missing values. It has 5 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "County": {
+      "column": "County",
+      "inferred_type": "categorical",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "City",
+      "cardinality": 3,
+      "unique_count": 3,
+      "top_10": [
+        {
+          "value": "City",
+          "count": 42120,
+          "pct": 84.24
+        },
+        {
+          "value": "Suburbs/Countryside",
+          "count": 7804,
+          "pct": 15.61
+        },
+        {
+          "value": "Unknown",
+          "count": 76,
+          "pct": 0.15
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "City",
+          "count": 42120,
+          "pct": 84.24
+        },
+        {
+          "value": "Suburbs/Countryside",
+          "count": 7804,
+          "pct": 15.61
+        },
+        {
+          "value": "Unknown",
+          "count": 76,
+          "pct": 0.15
+        }
+      ],
+      "chart_bar_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/County_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is City with 0.0% missing values.",
+        "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is City with 0.0% missing values. It has 3 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "event": {
+      "column": "event",
+      "inferred_type": "numeric",
+      "count": 80020,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 0.7817,
+      "median": 1.0,
+      "mode": 1.0,
+      "std": 0.41309626356390516,
+      "variance": 0.1706485229704594,
+      "min": 0.0,
+      "max": 1.0,
+      "range": 1.0,
+      "q1": 1.0,
+      "q2": 1.0,
+      "q3": 1.0,
+      "iqr": 0.0,
+      "skewness": -1.3639013145281467,
+      "kurtosis": -0.13977879698030948,
+      "outliers_iqr_count": 10915,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/event_hist.png",
+      "chart_boxplot_url": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/event_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Many outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 1.0 while the average is 0.7817. Values span from 0.0 to 1.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 10915 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 1.0 while the average is 0.7817. Values span from 0.0 to 1.0 with 0.0% missing entries. There are 10915 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    }
+  },
+  "quality_flags": {
+    "missing": {
+      "Patient ID": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Age": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "survival_time": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "treatment delays": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Sex": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Race": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Primary.Site": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Grade": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Laterality": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "ICD-O-3": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "T": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "N": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "M": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Stage": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Surgery": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Radiation": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Chemotherapy": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "OS": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "CSS": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Marital status": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "income": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "County": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "event": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      }
+    },
+    "duplicates": {
+      "count": 0,
+      "pct": 0.0
+    },
+    "constant_columns": [],
+    "high_cardinality_columns": [],
+    "potential_id_columns": [
+      "Patient ID"
+    ]
+  },
+  "cleaning": {
+    "type_mismatches": {}
+  },
+  "cleaned_csv_path": "/static/40da396b-f5ea-4b7d-98bc-bb6067b22864/cleaned.csv",
+  "key_findings": {
+    "whats_in_this_data": "Cleaned_Lung_Cancer_Survival_Data.xlsx includes operational records with mixed data types. You can use it for trend and category analysis after quick cleanup checks.",
+    "top_findings": [
+      "The dataset contains 80020 rows across 23 columns.",
+      "Overall quality score is 99.5 out of 100.",
+      "A small set of columns appears to need cleanup before reporting."
+    ],
+    "watch_out_for": [
+      "Age needs attention: Needs attention",
+      "survival_time needs attention: Critical attention"
+    ],
+    "suggested_next_step": "Review the red and yellow health columns first, then rerun summaries."
+  },
+  "dataset_overview": "The dataset has 80020 rows and 23 columns with memory usage around 66.12 MB. The overall quality score is 99.5 out of 100. Main issues include missing data and potential high-cardinality or identifier-like columns."
+}

@@ -12,8 +12,16 @@ def run_analysis_pipeline(upload_id: str) -> dict:
     meta["analysis_status"] = "running"
     write_json(metadata_path(upload_id), meta)
 
+    mode = meta.get("analysis_mode", "auto")
+    focus_columns = meta.get("focus_columns", [])
+
     try:
-        analysis = compute_analysis(upload_id, sheet_name=meta.get("active_sheet"))
+        analysis = compute_analysis(
+            upload_id,
+            sheet_name=meta.get("active_sheet"),
+            mode=mode,
+            focus_columns=focus_columns,
+        )
         analysis = generate_ai_summaries(analysis, meta)
         write_json(analysis_path(upload_id), analysis)
 

@@ -1,0 +1,15 @@
+{
+  "upload_id": "40da396b-f5ea-4b7d-98bc-bb6067b22864",
+  "file_name": "Cleaned_Lung_Cancer_Survival_Data.xlsx",
+  "file_hash": "377a72d2dd2a7c031bd496d2f851e4f5297b1075f4706610ab69053aee907301",
+  "file_size_mb": 6.22,
+  "status": "uploaded",
+  "analysis_status": "completed",
+  "created_at": "2026-03-02T18:30:28.846155+00:00",
+  "sheet_names": [
+    "Sheet1"
+  ],
+  "active_sheet": "Sheet1",
+  "row_count_estimate": 80020,
+  "warning": null
+}
