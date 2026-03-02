@@ -1,0 +1,2908 @@
+{
+  "summary": {
+    "rows": 84922,
+    "columns": 25,
+    "memory_mb": 80.88,
+    "type_breakdown": {
+      "numeric": 7,
+      "categorical": 4,
+      "boolean": 14
+    },
+    "quality_score": 99.5
+  },
+  "columns": [
+    {
+      "name": "ID",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": true
+      }
+    },
+    {
+      "name": "Country",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Age",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Gender",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Tobacco Use",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Alcohol Consumption",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "HPV Infection",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Betel Quid Use",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Chronic Sun Exposure",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Poor Oral Hygiene",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Diet (Fruits & Vegetables Intake)",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Family History of Cancer",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Compromised Immune System",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Oral Lesions",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Unexplained Bleeding",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Difficulty Swallowing",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "White or Red Patches in Mouth",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Tumor Size (cm)",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Cancer Stage",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Treatment Type",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Survival Rate (5-Year, %)",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Cost of Treatment (USD)",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Economic Burden (Lost Workdays per Year)",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Early Diagnosis",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "Oral Cancer (Diagnosis)",
+      "inferred_type": "boolean",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    }
+  ],
+  "column_stats": {
+    "ID": {
+      "column": "ID",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 42461.5,
+      "median": 42461.5,
+      "mode": 1.0,
+      "std": 24515.014117203085,
+      "variance": 600985917.1666666,
+      "min": 1.0,
+      "max": 84922.0,
+      "range": 84921.0,
+      "q1": 21231.25,
+      "q2": 42461.5,
+      "q3": 63691.75,
+      "iqr": 42460.5,
+      "skewness": 0.0,
+      "kurtosis": -1.2000000000000002,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/ID_hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/ID_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 42461.5 while the average is 42461.5. Values span from 1.0 to 84922.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 42461.5 while the average is 42461.5. Values span from 1.0 to 84922.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Country": {
+      "column": "Country",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "India",
+      "cardinality": 17,
+      "unique_count": 17,
+      "top_10": [
+        {
+          "value": "India",
+          "count": 8079,
+          "pct": 9.51
+        },
+        {
+          "value": "Pakistan",
+          "count": 8001,
+          "pct": 9.42
+        },
+        {
+          "value": "Sri Lanka",
+          "count": 8000,
+          "pct": 9.42
+        },
+        {
+          "value": "Taiwan",
+          "count": 7905,
+          "pct": 9.31
+        },
+        {
+          "value": "UK",
+          "count": 4930,
+          "pct": 5.81
+        },
+        {
+          "value": "Germany",
+          "count": 4909,
+          "pct": 5.78
+        },
+        {
+          "value": "USA",
+          "count": 4891,
+          "pct": 5.76
+        },
+        {
+          "value": "Italy",
+          "count": 4834,
+          "pct": 5.69
+        },
+        {
+          "value": "France",
+          "count": 4783,
+          "pct": 5.63
+        },
+        {
+          "value": "Brazil",
+          "count": 4762,
+          "pct": 5.61
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "India",
+          "count": 8079,
+          "pct": 9.51
+        },
+        {
+          "value": "Pakistan",
+          "count": 8001,
+          "pct": 9.42
+        },
+        {
+          "value": "Sri Lanka",
+          "count": 8000,
+          "pct": 9.42
+        },
+        {
+          "value": "Taiwan",
+          "count": 7905,
+          "pct": 9.31
+        },
+        {
+          "value": "UK",
+          "count": 4930,
+          "pct": 5.81
+        },
+        {
+          "value": "Germany",
+          "count": 4909,
+          "pct": 5.78
+        },
+        {
+          "value": "USA",
+          "count": 4891,
+          "pct": 5.76
+        },
+        {
+          "value": "Italy",
+          "count": 4834,
+          "pct": 5.69
+        },
+        {
+          "value": "France",
+          "count": 4783,
+          "pct": 5.63
+        },
+        {
+          "value": "Brazil",
+          "count": 4762,
+          "pct": 5.61
+        },
+        {
+          "value": "Russia",
+          "count": 4711,
+          "pct": 5.55
+        },
+        {
+          "value": "Egypt",
+          "count": 3263,
+          "pct": 3.84
+        },
+        {
+          "value": "Nigeria",
+          "count": 3256,
+          "pct": 3.83
+        },
+        {
+          "value": "Australia",
+          "count": 3189,
+          "pct": 3.76
+        },
+        {
+          "value": "Kenya",
+          "count": 3171,
+          "pct": 3.73
+        },
+        {
+          "value": "Japan",
+          "count": 3152,
+          "pct": 3.71
+        },
+        {
+          "value": "South Africa",
+          "count": 3086,
+          "pct": 3.63
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Country_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is India with 0.0% missing values.",
+        "anything_unusual": "It has 17 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is India with 0.0% missing values. It has 17 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Age": {
+      "column": "Age",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 54.50944396034008,
+      "median": 55.0,
+      "mode": 55.0,
+      "std": 10.01483863097234,
+      "variance": 100.29699280441595,
+      "min": 15.0,
+      "max": 101.0,
+      "range": 86.0,
+      "q1": 48.0,
+      "q2": 55.0,
+      "q3": 61.0,
+      "iqr": 13.0,
+      "skewness": -0.020433477446210112,
+      "kurtosis": 0.020594411238054278,
+      "outliers_iqr_count": 817,
+      "outliers_zscore_count": 252,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Age_hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Age_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 55.0 while the average is 54.50944396034008. Values span from 15.0 to 101.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 817 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 55.0 while the average is 54.50944396034008. Values span from 15.0 to 101.0 with 0.0% missing entries. There are 817 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Gender": {
+      "column": "Gender",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Male",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "Male",
+          "count": 60351,
+          "pct": 71.07
+        },
+        {
+          "value": "Female",
+          "count": 24571,
+          "pct": 28.93
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Male",
+          "count": 60351,
+          "pct": 71.07
+        },
+        {
+          "value": "Female",
+          "count": 24571,
+          "pct": 28.93
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Gender_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Male with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Male with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Tobacco Use": {
+      "column": "Tobacco Use",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Yes",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "Yes",
+          "count": 67989,
+          "pct": 80.06
+        },
+        {
+          "value": "No",
+          "count": 16933,
+          "pct": 19.94
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Yes",
+          "count": 67989,
+          "pct": 80.06
+        },
+        {
+          "value": "No",
+          "count": 16933,
+          "pct": 19.94
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Tobacco_Use_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Alcohol Consumption": {
+      "column": "Alcohol Consumption",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Yes",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "Yes",
+          "count": 50939,
+          "pct": 59.98
+        },
+        {
+          "value": "No",
+          "count": 33983,
+          "pct": 40.02
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Yes",
+          "count": 50939,
+          "pct": 59.98
+        },
+        {
+          "value": "No",
+          "count": 33983,
+          "pct": 40.02
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Alcohol_Consumption_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "HPV Infection": {
+      "column": "HPV Infection",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 59525,
+          "pct": 70.09
+        },
+        {
+          "value": "Yes",
+          "count": 25397,
+          "pct": 29.91
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 59525,
+          "pct": 70.09
+        },
+        {
+          "value": "Yes",
+          "count": 25397,
+          "pct": 29.91
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/HPV_Infection_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Betel Quid Use": {
+      "column": "Betel Quid Use",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 60299,
+          "pct": 71.01
+        },
+        {
+          "value": "Yes",
+          "count": 24623,
+          "pct": 28.99
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 60299,
+          "pct": 71.01
+        },
+        {
+          "value": "Yes",
+          "count": 24623,
+          "pct": 28.99
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Betel_Quid_Use_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Chronic Sun Exposure": {
+      "column": "Chronic Sun Exposure",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 68057,
+          "pct": 80.14
+        },
+        {
+          "value": "Yes",
+          "count": 16865,
+          "pct": 19.86
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 68057,
+          "pct": 80.14
+        },
+        {
+          "value": "Yes",
+          "count": 16865,
+          "pct": 19.86
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Chronic_Sun_Exposure_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Poor Oral Hygiene": {
+      "column": "Poor Oral Hygiene",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 42627,
+          "pct": 50.2
+        },
+        {
+          "value": "Yes",
+          "count": 42295,
+          "pct": 49.8
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 42627,
+          "pct": 50.2
+        },
+        {
+          "value": "Yes",
+          "count": 42295,
+          "pct": 49.8
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Poor_Oral_Hygiene_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Diet (Fruits & Vegetables Intake)": {
+      "column": "Diet (Fruits & Vegetables Intake)",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Moderate",
+      "cardinality": 3,
+      "unique_count": 3,
+      "top_10": [
+        {
+          "value": "Moderate",
+          "count": 33914,
+          "pct": 39.94
+        },
+        {
+          "value": "Low",
+          "count": 33896,
+          "pct": 39.91
+        },
+        {
+          "value": "High",
+          "count": 17112,
+          "pct": 20.15
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Moderate",
+          "count": 33914,
+          "pct": 39.94
+        },
+        {
+          "value": "Low",
+          "count": 33896,
+          "pct": 39.91
+        },
+        {
+          "value": "High",
+          "count": 17112,
+          "pct": 20.15
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Diet__Fruits___Vegetables_Intake__bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Moderate with 0.0% missing values.",
+        "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Moderate with 0.0% missing values. It has 3 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Family History of Cancer": {
+      "column": "Family History of Cancer",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 76508,
+          "pct": 90.09
+        },
+        {
+          "value": "Yes",
+          "count": 8414,
+          "pct": 9.91
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 76508,
+          "pct": 90.09
+        },
+        {
+          "value": "Yes",
+          "count": 8414,
+          "pct": 9.91
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Family_History_of_Cancer_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Compromised Immune System": {
+      "column": "Compromised Immune System",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 76368,
+          "pct": 89.93
+        },
+        {
+          "value": "Yes",
+          "count": 8554,
+          "pct": 10.07
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 76368,
+          "pct": 89.93
+        },
+        {
+          "value": "Yes",
+          "count": 8554,
+          "pct": 10.07
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Compromised_Immune_System_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Oral Lesions": {
+      "column": "Oral Lesions",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 59419,
+          "pct": 69.97
+        },
+        {
+          "value": "Yes",
+          "count": 25503,
+          "pct": 30.03
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 59419,
+          "pct": 69.97
+        },
+        {
+          "value": "Yes",
+          "count": 25503,
+          "pct": 30.03
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Oral_Lesions_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Unexplained Bleeding": {
+      "column": "Unexplained Bleeding",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 67891,
+          "pct": 79.95
+        },
+        {
+          "value": "Yes",
+          "count": 17031,
+          "pct": 20.05
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 67891,
+          "pct": 79.95
+        },
+        {
+          "value": "Yes",
+          "count": 17031,
+          "pct": 20.05
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Unexplained_Bleeding_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Difficulty Swallowing": {
+      "column": "Difficulty Swallowing",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 63709,
+          "pct": 75.02
+        },
+        {
+          "value": "Yes",
+          "count": 21213,
+          "pct": 24.98
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 63709,
+          "pct": 75.02
+        },
+        {
+          "value": "Yes",
+          "count": 21213,
+          "pct": 24.98
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Difficulty_Swallowing_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "White or Red Patches in Mouth": {
+      "column": "White or Red Patches in Mouth",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 55103,
+          "pct": 64.89
+        },
+        {
+          "value": "Yes",
+          "count": 29819,
+          "pct": 35.11
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 55103,
+          "pct": 64.89
+        },
+        {
+          "value": "Yes",
+          "count": 29819,
+          "pct": 35.11
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/White_or_Red_Patches_in_Mouth_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Tumor Size (cm)": {
+      "column": "Tumor Size (cm)",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 1.7472942039695085,
+      "median": 0.0,
+      "mode": 0.0,
+      "std": 2.0281993361406134,
+      "variance": 4.1135925471212245,
+      "min": 0.0,
+      "max": 5.9998985137106295,
+      "range": 5.9998985137106295,
+      "q1": 0.0,
+      "q2": 0.0,
+      "q3": 3.480075396251994,
+      "iqr": 3.480075396251994,
+      "skewness": 0.6632310040757519,
+      "kurtosis": -1.0678049693543505,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Tumor_Size__cm__hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Tumor_Size__cm__box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 0.0 while the average is 1.7472942039695085. Values span from 0.0 to 5.9998985137106295 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 0.0 while the average is 1.7472942039695085. Values span from 0.0 to 5.9998985137106295 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Cancer Stage": {
+      "column": "Cancer Stage",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 1.1187560349497185,
+      "median": 0.0,
+      "mode": 0.0,
+      "std": 1.3404182242331275,
+      "variance": 1.796721015856291,
+      "min": 0.0,
+      "max": 4.0,
+      "range": 4.0,
+      "q1": 0.0,
+      "q2": 0.0,
+      "q3": 2.0,
+      "iqr": 2.0,
+      "skewness": 0.825012122665014,
+      "kurtosis": -0.67629105608385,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Cancer_Stage_hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Cancer_Stage_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 0.0 while the average is 1.1187560349497185. Values span from 0.0 to 4.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 0.0 while the average is 1.1187560349497185. Values span from 0.0 to 4.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Treatment Type": {
+      "column": "Treatment Type",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No Treatment",
+      "cardinality": 5,
+      "unique_count": 5,
+      "top_10": [
+        {
+          "value": "No Treatment",
+          "count": 51016,
+          "pct": 60.07
+        },
+        {
+          "value": "Chemotherapy",
+          "count": 8529,
+          "pct": 10.04
+        },
+        {
+          "value": "Surgery",
+          "count": 8500,
+          "pct": 10.01
+        },
+        {
+          "value": "Targeted Therapy",
+          "count": 8465,
+          "pct": 9.97
+        },
+        {
+          "value": "Radiation",
+          "count": 8412,
+          "pct": 9.91
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No Treatment",
+          "count": 51016,
+          "pct": 60.07
+        },
+        {
+          "value": "Chemotherapy",
+          "count": 8529,
+          "pct": 10.04
+        },
+        {
+          "value": "Surgery",
+          "count": 8500,
+          "pct": 10.01
+        },
+        {
+          "value": "Targeted Therapy",
+          "count": 8465,
+          "pct": 9.97
+        },
+        {
+          "value": "Radiation",
+          "count": 8412,
+          "pct": 9.91
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Treatment_Type_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No Treatment with 0.0% missing values.",
+        "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No Treatment with 0.0% missing values. It has 5 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Survival Rate (5-Year, %)": {
+      "column": "Survival Rate (5-Year, %)",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 79.50336378445232,
+      "median": 100.0,
+      "mode": 100.0,
+      "std": 26.48374550999022,
+      "variance": 701.3887762379272,
+      "min": 10.000750400475608,
+      "max": 100.0,
+      "range": 89.99924959952439,
+      "q1": 65.2334249604501,
+      "q2": 100.0,
+      "q3": 100.0,
+      "iqr": 34.766575039549906,
+      "skewness": -1.0789834167078705,
+      "kurtosis": -0.13970059071940888,
+      "outliers_iqr_count": 974,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Survival_Rate__5-Year_____hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Survival_Rate__5-Year_____box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Highly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "critical",
+          "dot": "\ud83d\udd34",
+          "label": "Critical attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 100.0 while the average is 79.50336378445232. Values span from 10.000750400475608 to 100.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 974 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 100.0 while the average is 79.50336378445232. Values span from 10.000750400475608 to 100.0 with 0.0% missing entries. There are 974 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Cost of Treatment (USD)": {
+      "column": "Cost of Treatment (USD)",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 39109.88124396505,
+      "median": 0.0,
+      "mode": 0.0,
+      "std": 44710.687053777285,
+      "variance": 1999045536.8208077,
+      "min": 0.0,
+      "max": 159988.0,
+      "range": 159988.0,
+      "q1": 0.0,
+      "q2": 0.0,
+      "q3": 76468.4375,
+      "iqr": 76468.4375,
+      "skewness": 0.6684521156545471,
+      "kurtosis": -0.8841906694480186,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Cost_of_Treatment__USD__hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Cost_of_Treatment__USD__box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 0.0 while the average is 39109.88124396505. Values span from 0.0 to 159988.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 0.0 while the average is 39109.88124396505. Values span from 0.0 to 159988.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Economic Burden (Lost Workdays per Year)": {
+      "column": "Economic Burden (Lost Workdays per Year)",
+      "inferred_type": "numeric",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 52.02839075857846,
+      "median": 0.0,
+      "mode": 0.0,
+      "std": 60.389795575006254,
+      "variance": 3646.9274095910446,
+      "min": 0.0,
+      "max": 179.0,
+      "range": 179.0,
+      "q1": 0.0,
+      "q2": 0.0,
+      "q3": 104.0,
+      "iqr": 104.0,
+      "skewness": 0.6630211054453151,
+      "kurtosis": -1.0665817012037124,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Economic_Burden__Lost_Workdays_per_Year__hist.png",
+      "chart_boxplot_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Economic_Burden__Lost_Workdays_per_Year__box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Slightly skewed"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 0.0 while the average is 52.02839075857846. Values span from 0.0 to 179.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      },
+      "insight_summary": "Most values sit around 0.0 while the average is 52.02839075857846. Values span from 0.0 to 179.0 with 0.0% missing entries. There are 0 values that sit far from the typical range. Review outliers before using averages for business decisions."
+    },
+    "Early Diagnosis": {
+      "column": "Early Diagnosis",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "Yes",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "Yes",
+          "count": 46508,
+          "pct": 54.77
+        },
+        {
+          "value": "No",
+          "count": 38414,
+          "pct": 45.23
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "Yes",
+          "count": 46508,
+          "pct": 54.77
+        },
+        {
+          "value": "No",
+          "count": 38414,
+          "pct": 45.23
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Early_Diagnosis_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Oral Cancer (Diagnosis)": {
+      "column": "Oral Cancer (Diagnosis)",
+      "inferred_type": "categorical",
+      "count": 84922,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "No",
+      "cardinality": 2,
+      "unique_count": 2,
+      "top_10": [
+        {
+          "value": "No",
+          "count": 42573,
+          "pct": 50.13
+        },
+        {
+          "value": "Yes",
+          "count": 42349,
+          "pct": 49.87
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "No",
+          "count": 42573,
+          "pct": 50.13
+        },
+        {
+          "value": "Yes",
+          "count": 42349,
+          "pct": 49.87
+        }
+      ],
+      "chart_bar_url": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/Oral_Cancer__Diagnosis__bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+        "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+      },
+      "insight_summary": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values. It has 2 unique values, which may be high depending on business context. Standardize category names and merge near-duplicate labels before deeper analysis."
+    }
+  },
+  "quality_flags": {
+    "missing": {
+      "ID": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Country": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Age": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Gender": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Tobacco Use": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Alcohol Consumption": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "HPV Infection": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Betel Quid Use": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Chronic Sun Exposure": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Poor Oral Hygiene": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Diet (Fruits & Vegetables Intake)": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Family History of Cancer": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Compromised Immune System": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Oral Lesions": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Unexplained Bleeding": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Difficulty Swallowing": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "White or Red Patches in Mouth": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Tumor Size (cm)": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Cancer Stage": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Treatment Type": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Survival Rate (5-Year, %)": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Cost of Treatment (USD)": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Economic Burden (Lost Workdays per Year)": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Early Diagnosis": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "Oral Cancer (Diagnosis)": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      }
+    },
+    "duplicates": {
+      "count": 0,
+      "pct": 0.0
+    },
+    "constant_columns": [],
+    "high_cardinality_columns": [],
+    "potential_id_columns": [
+      "ID"
+    ]
+  },
+  "cleaning": {
+    "type_mismatches": {}
+  },
+  "cleaned_csv_path": "/static/cc227a51-3863-4ce0-97aa-deebc8db55b0/cleaned.csv",
+  "key_findings": {
+    "whats_in_this_data": "oral_cancer_prediction_dataset.csv includes operational records with mixed data types. You can use it for trend and category analysis after quick cleanup checks.",
+    "top_findings": [
+      "The dataset contains 84922 rows across 25 columns.",
+      "Overall quality score is 99.5 out of 100.",
+      "A small set of columns appears to need cleanup before reporting."
+    ],
+    "watch_out_for": [
+      "Age needs attention: Needs attention",
+      "Tumor Size (cm) needs attention: Needs attention"
+    ],
+    "suggested_next_step": "Review the red and yellow health columns first, then rerun summaries."
+  },
+  "dataset_overview": "The dataset has 84922 rows and 25 columns with memory usage around 80.88 MB. The overall quality score is 99.5 out of 100. Main issues include missing data and potential high-cardinality or identifier-like columns."
+}

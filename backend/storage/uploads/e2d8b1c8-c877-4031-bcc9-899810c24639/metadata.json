@@ -1,0 +1,12 @@
+{
+  "upload_id": "e2d8b1c8-c877-4031-bcc9-899810c24639",
+  "file_name": "iris.csv",
+  "file_size_mb": 0.0,
+  "status": "uploaded",
+  "analysis_status": "completed",
+  "created_at": "2026-03-02T15:05:14.893697+00:00",
+  "sheet_names": [],
+  "active_sheet": null,
+  "row_count_estimate": 150,
+  "warning": null
+}

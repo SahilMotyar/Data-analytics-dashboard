@@ -1,0 +1,143 @@
+{
+  "key_findings": {
+    "whats_in_this_data": "oral_cancer_prediction_dataset.csv includes operational records with mixed data types. You can use it for trend and category analysis after quick cleanup checks.",
+    "top_findings": [
+      "The dataset contains 84922 rows across 25 columns.",
+      "Overall quality score is 99.5 out of 100.",
+      "A small set of columns appears to need cleanup before reporting."
+    ],
+    "watch_out_for": [
+      "Age needs attention: Needs attention",
+      "Tumor Size (cm) needs attention: Needs attention"
+    ],
+    "suggested_next_step": "Review the red and yellow health columns first, then rerun summaries."
+  },
+  "dataset_overview": "The dataset has 84922 rows and 25 columns with memory usage around 80.88 MB. The overall quality score is 99.5 out of 100. Main issues include missing data and potential high-cardinality or identifier-like columns.",
+  "column_summaries": {
+    "ID": {
+      "what_does_this_look_like": "Most values sit around 42461.5 while the average is 42461.5. Values span from 1.0 to 84922.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Country": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is India with 0.0% missing values.",
+      "anything_unusual": "It has 17 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Age": {
+      "what_does_this_look_like": "Most values sit around 55.0 while the average is 54.50944396034008. Values span from 15.0 to 101.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 817 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Gender": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Male with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Tobacco Use": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Alcohol Consumption": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "HPV Infection": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Betel Quid Use": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Chronic Sun Exposure": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Poor Oral Hygiene": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Diet (Fruits & Vegetables Intake)": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Moderate with 0.0% missing values.",
+      "anything_unusual": "It has 3 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Family History of Cancer": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Compromised Immune System": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Oral Lesions": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Unexplained Bleeding": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Difficulty Swallowing": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "White or Red Patches in Mouth": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Tumor Size (cm)": {
+      "what_does_this_look_like": "Most values sit around 0.0 while the average is 1.7472942039695085. Values span from 0.0 to 5.9998985137106295 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Cancer Stage": {
+      "what_does_this_look_like": "Most values sit around 0.0 while the average is 1.1187560349497185. Values span from 0.0 to 4.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Treatment Type": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No Treatment with 0.0% missing values.",
+      "anything_unusual": "It has 5 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Survival Rate (5-Year, %)": {
+      "what_does_this_look_like": "Most values sit around 100.0 while the average is 79.50336378445232. Values span from 10.000750400475608 to 100.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 974 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Cost of Treatment (USD)": {
+      "what_does_this_look_like": "Most values sit around 0.0 while the average is 39109.88124396505. Values span from 0.0 to 159988.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Economic Burden (Lost Workdays per Year)": {
+      "what_does_this_look_like": "Most values sit around 0.0 while the average is 52.02839075857846. Values span from 0.0 to 179.0 with 0.0% missing entries.",
+      "anything_unusual": "There are 0 values that sit far from the typical range.",
+      "what_should_i_do": "Review outliers before using averages for business decisions."
+    },
+    "Early Diagnosis": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is Yes with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    },
+    "Oral Cancer (Diagnosis)": {
+      "what_does_this_look_like": "This column is mostly made of category labels. The most frequent value is No with 0.0% missing values.",
+      "anything_unusual": "It has 2 unique values, which may be high depending on business context.",
+      "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis."
+    }
+  }
+}

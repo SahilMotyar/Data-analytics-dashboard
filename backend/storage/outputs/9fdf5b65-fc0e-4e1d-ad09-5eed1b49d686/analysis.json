@@ -1,0 +1,241 @@
+{
+  "summary": {
+    "rows": 150,
+    "columns": 5,
+    "memory_mb": 0.01,
+    "type_breakdown": {
+      "numeric": 5
+    },
+    "quality_score": 99.78
+  },
+  "columns": [
+    {
+      "name": "150",
+      "inferred_type": "numeric",
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "4",
+      "inferred_type": "numeric",
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "setosa",
+      "inferred_type": "numeric",
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "versicolor",
+      "inferred_type": "numeric",
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "virginica",
+      "inferred_type": "numeric",
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    }
+  ],
+  "column_stats": {
+    "150": {
+      "column": "150",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 5.843333333333334,
+      "median": 5.8,
+      "mode": 5.0,
+      "std": 0.828066127977863,
+      "variance": 0.6856935123042507,
+      "min": 4.3,
+      "max": 7.9,
+      "range": 3.6000000000000005,
+      "q1": 5.1,
+      "q2": 5.8,
+      "q3": 6.4,
+      "iqr": 1.3000000000000007,
+      "skewness": 0.3149109566369728,
+      "kurtosis": -0.5520640413156395,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/150_hist.png",
+      "chart_boxplot_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/150_box.png",
+      "insight_summary": "This numeric column has mean 5.843333333333334 and median 5.8. Missing values are 0.0% and IQR outliers are 0. Skewness is 0.3149109566369728, indicating distribution shape."
+    },
+    "4": {
+      "column": "4",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 3.0573333333333337,
+      "median": 3.0,
+      "mode": 3.0,
+      "std": 0.4358662849366982,
+      "variance": 0.189979418344519,
+      "min": 2.0,
+      "max": 4.4,
+      "range": 2.4000000000000004,
+      "q1": 2.8,
+      "q2": 3.0,
+      "q3": 3.3,
+      "iqr": 0.5,
+      "skewness": 0.31896566471359966,
+      "kurtosis": 0.2282490424681929,
+      "outliers_iqr_count": 4,
+      "outliers_zscore_count": 1,
+      "chart_histogram_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/4_hist.png",
+      "chart_boxplot_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/4_box.png",
+      "insight_summary": "This numeric column has mean 3.0573333333333337 and median 3.0. Missing values are 0.0% and IQR outliers are 4. Skewness is 0.31896566471359966, indicating distribution shape."
+    },
+    "setosa": {
+      "column": "setosa",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 3.7580000000000005,
+      "median": 4.35,
+      "mode": 1.4,
+      "std": 1.7652982332594662,
+      "variance": 3.116277852348993,
+      "min": 1.0,
+      "max": 6.9,
+      "range": 5.9,
+      "q1": 1.6,
+      "q2": 4.35,
+      "q3": 5.1,
+      "iqr": 3.4999999999999996,
+      "skewness": -0.27488417975101276,
+      "kurtosis": -1.4021034155217518,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/setosa_hist.png",
+      "chart_boxplot_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/setosa_box.png",
+      "insight_summary": "This numeric column has mean 3.7580000000000005 and median 4.35. Missing values are 0.0% and IQR outliers are 0. Skewness is -0.27488417975101276, indicating distribution shape."
+    },
+    "versicolor": {
+      "column": "versicolor",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 1.1993333333333336,
+      "median": 1.3,
+      "mode": 0.2,
+      "std": 0.7622376689603465,
+      "variance": 0.5810062639821029,
+      "min": 0.1,
+      "max": 2.5,
+      "range": 2.4,
+      "q1": 0.3,
+      "q2": 1.3,
+      "q3": 1.8,
+      "iqr": 1.5,
+      "skewness": -0.10296674764898116,
+      "kurtosis": -1.340603996612646,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/versicolor_hist.png",
+      "chart_boxplot_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/versicolor_box.png",
+      "insight_summary": "This numeric column has mean 1.1993333333333336 and median 1.3. Missing values are 0.0% and IQR outliers are 0. Skewness is -0.10296674764898116, indicating distribution shape."
+    },
+    "virginica": {
+      "column": "virginica",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 1.0,
+      "median": 1.0,
+      "mode": 0.0,
+      "std": 0.8192319205190405,
+      "variance": 0.6711409395973155,
+      "min": 0.0,
+      "max": 2.0,
+      "range": 2.0,
+      "q1": 0.0,
+      "q2": 1.0,
+      "q3": 2.0,
+      "iqr": 2.0,
+      "skewness": 0.0,
+      "kurtosis": -1.5101351351351353,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "chart_histogram_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/virginica_hist.png",
+      "chart_boxplot_url": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/virginica_box.png",
+      "insight_summary": "This numeric column has mean 1.0 and median 1.0. Missing values are 0.0% and IQR outliers are 0. Skewness is 0.0, indicating distribution shape."
+    }
+  },
+  "quality_flags": {
+    "missing": {
+      "150": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "4": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "setosa": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "versicolor": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "virginica": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      }
+    },
+    "duplicates": {
+      "count": 1,
+      "pct": 0.67
+    },
+    "constant_columns": [],
+    "high_cardinality_columns": [],
+    "potential_id_columns": []
+  },
+  "cleaning": {
+    "type_mismatches": {}
+  },
+  "cleaned_csv_path": "/static/9fdf5b65-fc0e-4e1d-ad09-5eed1b49d686/cleaned.csv",
+  "dataset_overview": "The dataset has 150 rows and 5 columns with memory usage around 0.01 MB. The overall quality score is 99.78 out of 100. Main issues include missing data and potential high-cardinality or identifier-like columns."
+}
