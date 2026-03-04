@@ -89,6 +89,44 @@ type ChatMessage = {
   content: string
 }
 
+type PreAnalysis = {
+  smart_type_correction?: {
+    reclassifications?: { column: string; from: string; to: string; reason: string; message?: string }[]
+    excluded_columns?: { column: string; reason: string }[]
+    high_missing_flags?: { column: string; missing_pct: number; message: string }[]
+    percentage_flags?: { column: string; message: string }[]
+  }
+  correlation_analysis?: {
+    pairs?: { col_a: string; col_b: string; pearson_r: number; spearman_rho: number; strength: string; non_linear_signal?: boolean }[]
+    notable_negative?: { col_a: string; col_b: string; pearson_r: number }[]
+    redundant_pairs?: { col_a: string; col_b: string; pearson_r: number }[]
+  }
+  group_difference_analysis?: {
+    strongest_by_category?: {
+      categorical_column: string
+      numeric_column: string
+      effect_size: number
+      effect_label: string
+      group_means: { group: string; mean: number; std?: number | null; count: number }[]
+    }[]
+  }
+  outlier_characterisation?: {
+    multi_column_anomalies?: { row_index: number; columns: string[] }[]
+  }
+  dataset_level_checks?: {
+    duplicate_columns?: { col_a: string; col_b: string; message: string }[]
+    sample_size_flags?: string[]
+    class_imbalance?: { column: string; top_category: string; top_pct: number; message: string }[]
+    datetime_checks?: { column: string; expected_frequency: string; missing_period_count: number; target_trend_direction?: string; target_trend_r2?: number | null }[]
+  }
+  name_quality_flag?: string | null
+}
+
+type GridPreview = {
+  rows: { row_index: number; values: Record<string, unknown>; row_flags: string[]; cell_flags: Record<string, string[]> }[]
+  columns: { name: string; final_type: string; reclassified: boolean; missing_pct: number }[]
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    Constants & helpers
    ═══════════════════════════════════════════════════════════════════════ */
@@ -161,6 +199,14 @@ function App() {
   const [detectedColumns, setDetectedColumns] = useState<string[]>([])
   const [rowEstimate, setRowEstimate] = useState<number | null>(null)
   const [showAnalysisOptions, setShowAnalysisOptions] = useState(false)
+  const [preAnalysis, setPreAnalysis] = useState<PreAnalysis | null>(null)
+  const [gridPreview, setGridPreview] = useState<GridPreview | null>(null)
+  const [gridSearch, setGridSearch] = useState('')
+  const [gridOutliersOnly, setGridOutliersOnly] = useState(false)
+  const [gridMissingOnly, setGridMissingOnly] = useState(false)
+  const [compareA, setCompareA] = useState('')
+  const [compareB, setCompareB] = useState('')
+  const [compareResult, setCompareResult] = useState<Record<string, unknown> | null>(null)
 
   const uploadId = uploadMeta?.upload_id
   const canAnalyze = !!uploadId && uploadMeta?.analysis_status !== 'running' && uploadMeta?.analysis_status !== 'queued'
@@ -180,6 +226,8 @@ function App() {
     setFile(selected)
     setUploadMeta(null); setSummary(null); setKeyFindings(null); setColumns([])
     setSelectedColumn(''); setColumnStats(null); setSharePath(''); setChatMessages([])
+    setPreAnalysis(null); setGridPreview(null); setCompareResult(null)
+    setCompareA(''); setCompareB('')
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false })
@@ -229,15 +277,19 @@ function App() {
   }, [uploadId])
 
   const loadDashboard = useCallback(async (id: string) => {
-    const [summaryRes, columnsRes, findingsRes] = await Promise.all([
+    const [summaryRes, columnsRes, findingsRes, preRes, gridRes] = await Promise.all([
       api.get(`/api/v1/analysis/${id}/summary`),
       api.get(`/api/v1/analysis/${id}/columns`),
       api.get(`/api/v1/analysis/${id}/key-findings`),
+      api.get(`/api/v1/analysis/${id}/pre-analysis`),
+      api.get(`/api/v1/analysis/${id}/grid-preview`, { params: { limit: 120 } }),
     ])
     const loadedColumns: ColumnItem[] = columnsRes.data
     setSummary(summaryRes.data)
     setColumns(loadedColumns)
     setKeyFindings(findingsRes.data)
+    setPreAnalysis(preRes.data)
+    setGridPreview(gridRes.data)
     if (loadedColumns.length > 0) await fetchColumnStats(loadedColumns[0].name, id)
   }, [fetchColumnStats])
 
@@ -267,6 +319,30 @@ function App() {
     }, 2000)
     return () => window.clearInterval(timer)
   }, [uploadId, uploadMeta?.analysis_status, loadDashboard])
+
+  const refreshGridPreview = useCallback(async () => {
+    if (!uploadId || !summary) return
+    const res = await api.get(`/api/v1/analysis/${uploadId}/grid-preview`, {
+      params: {
+        limit: 160,
+        outliers_only: gridOutliersOnly,
+        missing_only: gridMissingOnly,
+      },
+    })
+    setGridPreview(res.data)
+  }, [uploadId, summary, gridOutliersOnly, gridMissingOnly])
+
+  useEffect(() => {
+    void refreshGridPreview()
+  }, [refreshGridPreview])
+
+  const runCompare = async () => {
+    if (!uploadId || !compareA || !compareB || compareA === compareB) return
+    const res = await api.get(`/api/v1/analysis/${uploadId}/compare`, {
+      params: { col_a: compareA, col_b: compareB },
+    })
+    setCompareResult(res.data)
+  }
 
   /* ── Column type override ── */
   const updateType = async (name: string, newType: string) => {
@@ -361,7 +437,7 @@ function App() {
             )}
             {summary && (
               <button
-                onClick={() => { setSummary(null); setUploadMeta(null); setFile(null); setColumns([]); setColumnStats(null); setKeyFindings(null); setSelectedColumn(''); setChatMessages([]) }}
+                onClick={() => { setSummary(null); setUploadMeta(null); setFile(null); setColumns([]); setColumnStats(null); setKeyFindings(null); setSelectedColumn(''); setChatMessages([]); setPreAnalysis(null); setGridPreview(null); setCompareResult(null); setCompareA(''); setCompareB('') }}
                 className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-200"
               >
                 New Upload
@@ -667,6 +743,54 @@ function App() {
                 </section>
               )}
 
+              {/* ── Row 3c: Universal statistical findings ── */}
+              {preAnalysis && (
+                <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-900">🧠 Reclassifications & Quality Flags</h3>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      {preAnalysis.name_quality_flag && (
+                        <p className="rounded-lg bg-amber-50 px-3 py-2 text-amber-800">{preAnalysis.name_quality_flag}</p>
+                      )}
+                      {(preAnalysis.smart_type_correction?.reclassifications || []).slice(0, 6).map((r, i) => (
+                        <p key={i}>⚡ <span className="font-medium text-gray-800">{r.column}</span>: {r.from} → {r.to} ({r.reason})</p>
+                      ))}
+                      {(preAnalysis.smart_type_correction?.high_missing_flags || []).slice(0, 4).map((f, i) => (
+                        <p key={`m-${i}`} className="text-amber-700">🔴 {f.message}</p>
+                      ))}
+                      {(preAnalysis.dataset_level_checks?.sample_size_flags || []).map((f, i) => (
+                        <p key={`s-${i}`} className="text-amber-700">⚠️ {f}</p>
+                      ))}
+                      {(preAnalysis.dataset_level_checks?.class_imbalance || []).slice(0, 4).map((item, i) => (
+                        <p key={`c-${i}`} className="text-amber-700">📉 {item.message}</p>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-900">🔗 Relationships & Group Effects</h3>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      {(preAnalysis.correlation_analysis?.pairs || []).slice(0, 5).map((pair, i) => (
+                        <p key={i}>
+                          <span className="font-medium text-gray-800">{pair.col_a}</span> ↔ <span className="font-medium text-gray-800">{pair.col_b}</span>
+                          : r={pair.pearson_r}, ρ={pair.spearman_rho}
+                          {pair.non_linear_signal ? <span className="ml-1 rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] text-indigo-700">non-linear</span> : null}
+                        </p>
+                      ))}
+                      {(preAnalysis.correlation_analysis?.redundant_pairs || []).slice(0, 3).map((pair, i) => (
+                        <p key={`r-${i}`} className="text-red-700">♻️ Redundant: {pair.col_a} and {pair.col_b} (r={pair.pearson_r})</p>
+                      ))}
+                      {(preAnalysis.group_difference_analysis?.strongest_by_category || []).slice(0, 4).map((g, i) => (
+                        <p key={`g-${i}`}>📌 <span className="font-medium text-gray-800">{g.categorical_column}</span> best explains <span className="font-medium text-gray-800">{g.numeric_column}</span> (effect {g.effect_size})</p>
+                      ))}
+                      {(preAnalysis.outlier_characterisation?.multi_column_anomalies || []).slice(0, 4).map((row, i) => (
+                        <p key={`o-${i}`} className="text-amber-700">🟠 Multi-column anomaly row {row.row_index}: {row.columns.join(', ')}</p>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+
               {/* ── Row 4: Column pills (replaces sidebar) ── */}
               <section className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
                 <div className="mb-4 flex items-center justify-between">
@@ -831,6 +955,95 @@ function App() {
                         </div>
                       )}
                     </div>
+                  </div>
+                </section>
+              )}
+
+              {/* ── Row 6: Data Wrangler Grid + Compare Mode ── */}
+              {gridPreview && (
+                <section className="rounded-2xl bg-white p-6 ring-1 ring-gray-100">
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <h3 className="mr-auto text-sm font-semibold text-gray-900">🧩 Data Wrangler</h3>
+                    <input
+                      value={gridSearch}
+                      onChange={(e) => setGridSearch(e.target.value)}
+                      placeholder="Search columns"
+                      className="rounded-lg bg-gray-50 px-3 py-1.5 text-xs ring-1 ring-gray-200"
+                    />
+                    <button onClick={() => setGridOutliersOnly((p) => !p)} className={`rounded-lg px-3 py-1.5 text-xs ${gridOutliersOnly ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600'}`}>🟠 Outlier rows only</button>
+                    <button onClick={() => setGridMissingOnly((p) => !p)} className={`rounded-lg px-3 py-1.5 text-xs ${gridMissingOnly ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'}`}>🔴 Missing rows only</button>
+                    <button onClick={() => void refreshGridPreview()} className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-600">Refresh</button>
+                  </div>
+
+                  <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <select value={compareA} onChange={(e) => setCompareA(e.target.value)} className="rounded-lg bg-gray-50 px-2 py-1.5 text-xs ring-1 ring-gray-200">
+                      <option value="">Compare column A</option>
+                      {columns.map((c) => <option key={`a-${c.name}`} value={c.name}>{c.name}</option>)}
+                    </select>
+                    <select value={compareB} onChange={(e) => setCompareB(e.target.value)} className="rounded-lg bg-gray-50 px-2 py-1.5 text-xs ring-1 ring-gray-200">
+                      <option value="">Compare column B</option>
+                      {columns.map((c) => <option key={`b-${c.name}`} value={c.name}>{c.name}</option>)}
+                    </select>
+                    <button onClick={() => void runCompare()} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white">Compare two columns</button>
+                    <button onClick={downloadCleanedCsv} className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs text-gray-600">Download filtered CSV</button>
+                  </div>
+
+                  {compareResult && (
+                    <div className="mb-4 rounded-xl bg-gray-50 p-3 text-xs text-gray-700 ring-1 ring-gray-100">
+                      <p className="font-semibold text-gray-900">Compare Mode</p>
+                      <p className="mt-1">{String(compareResult.interpretation || compareResult.message || 'Comparison ready')}</p>
+                      {'pearson_r' in compareResult && (
+                        <p className="mt-1">r={String(compareResult.pearson_r)}{typeof compareResult.spearman_rho !== 'undefined' ? `, ρ=${String(compareResult.spearman_rho)}` : ''}</p>
+                      )}
+                      {'effect_size' in compareResult && <p className="mt-1">effect size={String(compareResult.effect_size)}</p>}
+                    </div>
+                  )}
+
+                  <div className="max-h-80 overflow-auto rounded-xl ring-1 ring-gray-100">
+                    <table className="min-w-full text-xs">
+                      <thead className="sticky top-0 bg-gray-50">
+                        <tr>
+                          <th className="px-2 py-2 text-left text-gray-500">#</th>
+                          {gridPreview.columns
+                            .filter((col) => !gridSearch || col.name.toLowerCase().includes(gridSearch.toLowerCase()))
+                            .map((col) => (
+                              <th key={col.name} className={`px-2 py-2 text-left font-medium ${col.reclassified ? 'bg-purple-50 text-purple-700' : 'text-gray-600'}`}>
+                                <div className="flex items-center gap-1">
+                                  <span>{col.name}</span>
+                                  <span className="rounded bg-gray-100 px-1 text-[10px] text-gray-500">{col.final_type}</span>
+                                  {col.reclassified && <span className="rounded bg-purple-100 px-1 text-[10px] text-purple-700">⚡</span>}
+                                </div>
+                                <div className="mt-1 h-1.5 w-20 overflow-hidden rounded-full bg-gray-200">
+                                  <div className="h-full bg-red-400" style={{ width: `${Math.min(100, Number(col.missing_pct || 0))}%` }} />
+                                </div>
+                              </th>
+                            ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {gridPreview.rows.map((row) => (
+                          <tr key={row.row_index} className={row.row_flags.includes('multi_column_anomaly') ? 'bg-[repeating-linear-gradient(45deg,#fff,#fff_8px,#f8fafc_8px,#f8fafc_16px)]' : ''}>
+                            <td className="border-t border-gray-100 px-2 py-1.5 text-gray-400">{row.row_index}</td>
+                            {gridPreview.columns
+                              .filter((col) => !gridSearch || col.name.toLowerCase().includes(gridSearch.toLowerCase()))
+                              .map((col) => {
+                                const flags = row.cell_flags[col.name] || []
+                                const value = row.values[col.name]
+                                return (
+                                  <td
+                                    key={`${row.row_index}-${col.name}`}
+                                    className={`border-t border-gray-100 px-2 py-1.5 ${
+                                      flags.includes('missing') ? 'bg-red-50 text-red-700' : flags.includes('outlier') ? 'bg-amber-50 text-amber-800' : flags.includes('reclassified') ? 'bg-purple-50' : ''
+                                    }`}
+                                  >
+                                    {flags.includes('missing') ? '—' : String(value ?? '')}
+                                  </td>
+                                )
+                              })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </section>
               )}

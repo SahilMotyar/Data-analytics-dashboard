@@ -67,6 +67,96 @@ class ChatRequest(BaseModel):
     history: list[dict[str, str]] = []
 
 
+@router.get("/analysis/{upload_id}/grid-preview")
+def grid_preview(
+    upload_id: str,
+    limit: int = 200,
+    outliers_only: bool = False,
+    missing_only: bool = False,
+) -> dict[str, Any]:
+    analysis = get_analysis(upload_id)
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+
+    cleaned_path = settings.outputs_dir / upload_id / "cleaned.csv"
+    if not cleaned_path.exists():
+        raise HTTPException(status_code=404, detail="Cleaned data not found")
+
+    df = pd.read_csv(cleaned_path)
+    pre = analysis.get("pre_analysis", {})
+    smart = pre.get("smart_type_correction", {})
+    reclassified = {item.get("column") for item in smart.get("reclassifications", [])}
+    outlier_map = pre.get("outlier_characterisation", {}).get("outliers_by_column", {})
+    anomaly_rows = {
+        int(item.get("row_index"))
+        for item in pre.get("outlier_characterisation", {}).get("multi_column_anomalies", [])
+    }
+
+    outlier_row_col = {
+        (int(detail.get("row_index")), col)
+        for col, payload in outlier_map.items()
+        for detail in payload.get("details", [])
+    }
+
+    if outliers_only:
+        outlier_rows = sorted({row for row, _ in outlier_row_col})
+        df = df.loc[df.index.intersection(outlier_rows)]
+    if missing_only:
+        df = df[df.isna().any(axis=1)]
+
+    df = df.head(max(1, min(limit, 2000)))
+    rows = []
+    for idx, row in df.iterrows():
+        values = row.to_dict()
+        cell_flags = {}
+        for col, value in values.items():
+            flags = []
+            if pd.isna(value):
+                flags.append("missing")
+            if (int(idx), col) in outlier_row_col:
+                flags.append("outlier")
+            if col in reclassified:
+                flags.append("reclassified")
+            cell_flags[col] = flags
+        rows.append(
+            {
+                "row_index": int(idx),
+                "values": values,
+                "cell_flags": cell_flags,
+                "row_flags": ["multi_column_anomaly"] if int(idx) in anomaly_rows else [],
+            }
+        )
+
+    columns_payload = []
+    for col in df.columns:
+        stats = analysis.get("column_stats", {}).get(col, {})
+        final_type = stats.get("inferred_type")
+        rec_item = next((item for item in smart.get("reclassifications", []) if item.get("column") == col), None)
+        missing_pct = stats.get("missing_pct", 0)
+        mini_dist = {
+            "kind": "numeric" if final_type == "numeric" else "categorical" if final_type in {"categorical", "boolean"} else "datetime" if final_type == "datetime" else "other",
+            "shape": (stats.get("distribution_shape") or {}).get("shape"),
+            "top_10": stats.get("top_10", [])[:5],
+        }
+        columns_payload.append(
+            {
+                "name": col,
+                "final_type": final_type,
+                "reclassified": rec_item is not None,
+                "reclassification": rec_item,
+                "missing_pct": missing_pct,
+                "mini_distribution": mini_dist,
+            }
+        )
+
+    return {
+        "upload_id": upload_id,
+        "rows": rows,
+        "columns": columns_payload,
+        "applied_filters": {"outliers_only": outliers_only, "missing_only": missing_only, "limit": limit},
+    }
+
+
 @router.post("/uploads")
 async def upload_file(request: Request, file: UploadFile = File(...)) -> dict[str, Any]:
     client_key = request.client.host if request.client else "anonymous"
@@ -234,6 +324,14 @@ def key_findings(upload_id: str) -> dict[str, Any]:
     return analysis.get("key_findings", {})
 
 
+@router.get("/analysis/{upload_id}/pre-analysis")
+def pre_analysis(upload_id: str) -> dict[str, Any]:
+    analysis = get_analysis(upload_id)
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    return analysis.get("pre_analysis", {})
+
+
 @router.get("/analysis/{upload_id}/columns")
 def analysis_columns(upload_id: str) -> list[dict[str, Any]]:
     analysis = get_analysis(upload_id)
@@ -252,6 +350,103 @@ def column_stats(upload_id: str, col: str) -> dict[str, Any]:
     if not stats:
         raise HTTPException(status_code=404, detail="Column not found")
     return stats
+
+
+@router.get("/analysis/{upload_id}/compare")
+def compare_columns(upload_id: str, col_a: str, col_b: str) -> dict[str, Any]:
+    analysis = get_analysis(upload_id)
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+
+    cleaned_path = settings.outputs_dir / upload_id / "cleaned.csv"
+    if not cleaned_path.exists():
+        raise HTTPException(status_code=404, detail="Cleaned CSV not available")
+
+    df = pd.read_csv(cleaned_path)
+    if col_a not in df.columns or col_b not in df.columns:
+        raise HTTPException(status_code=404, detail="Column not found")
+
+    type_a = analysis.get("column_stats", {}).get(col_a, {}).get("inferred_type")
+    type_b = analysis.get("column_stats", {}).get(col_b, {}).get("inferred_type")
+
+    numeric_types = {"numeric"}
+    cat_types = {"categorical", "boolean"}
+
+    # numeric + numeric -> scatter relationship stats
+    if type_a in numeric_types and type_b in numeric_types:
+        sub = df[[col_a, col_b]].copy()
+        sub[col_a] = pd.to_numeric(sub[col_a], errors="coerce")
+        sub[col_b] = pd.to_numeric(sub[col_b], errors="coerce")
+        sub = sub.dropna()
+        if len(sub) < 5:
+            return {"mode": "numeric_numeric", "message": "Not enough paired data points."}
+        pearson = float(sub[col_a].corr(sub[col_b], method="pearson"))
+        spearman = float(sub[col_a].corr(sub[col_b], method="spearman"))
+        points = [
+            {"x": float(row[col_a]), "y": float(row[col_b])}
+            for _, row in sub.head(4000).iterrows()
+        ]
+        return {
+            "mode": "numeric_numeric",
+            "col_a": col_a,
+            "col_b": col_b,
+            "pearson_r": round(pearson, 4),
+            "spearman_rho": round(spearman, 4),
+            "non_linear_signal": abs(pearson - spearman) > 0.2,
+            "points": points,
+            "interpretation": f"{col_a} and {col_b} show correlation r={round(pearson, 3)}.",
+        }
+
+    # numeric + categorical -> grouped boxplot payload + effect size
+    if (type_a in numeric_types and type_b in cat_types) or (type_b in numeric_types and type_a in cat_types):
+        num_col = col_a if type_a in numeric_types else col_b
+        cat_col = col_b if num_col == col_a else col_a
+        sub = df[[num_col, cat_col]].copy()
+        sub[num_col] = pd.to_numeric(sub[num_col], errors="coerce")
+        sub = sub.dropna()
+        grouped = sub.groupby(cat_col)[num_col].agg(["mean", "std", "count", "min", "max"]).reset_index()
+        overall_std = float(sub[num_col].std()) if len(sub) else 0.0
+        effect_size = 0.0 if overall_std == 0 else float((grouped["mean"].max() - grouped["mean"].min()) / overall_std)
+        return {
+            "mode": "numeric_categorical",
+            "numeric_column": num_col,
+            "categorical_column": cat_col,
+            "effect_size": round(effect_size, 4),
+            "groups": [
+                {
+                    "group": str(row[cat_col]),
+                    "mean": round(float(row["mean"]), 4),
+                    "std": round(float(row["std"]), 4) if not pd.isna(row["std"]) else None,
+                    "count": int(row["count"]),
+                    "min": round(float(row["min"]), 4),
+                    "max": round(float(row["max"]), 4),
+                }
+                for _, row in grouped.iterrows()
+            ],
+            "interpretation": f"{cat_col} groups separate {num_col} with effect size {round(effect_size, 3)}.",
+        }
+
+    # categorical + categorical -> crosstab heatmap payload
+    if type_a in cat_types and type_b in cat_types:
+        sub = df[[col_a, col_b]].copy().dropna()
+        tab = pd.crosstab(sub[col_a].astype(str), sub[col_b].astype(str))
+        records = []
+        for idx_name, row in tab.iterrows():
+            for col_name, value in row.items():
+                records.append({"x": str(idx_name), "y": str(col_name), "count": int(value)})
+        most_common = max(records, key=lambda item: item["count"]) if records else None
+        rarest = min((item for item in records if item["count"] > 0), key=lambda item: item["count"], default=None)
+        return {
+            "mode": "categorical_categorical",
+            "col_a": col_a,
+            "col_b": col_b,
+            "cells": records,
+            "most_common": most_common,
+            "rarest": rarest,
+            "interpretation": f"Most common combination is {most_common} and rarest non-zero is {rarest}." if most_common else "No overlapping values.",
+        }
+
+    return {"mode": "unsupported", "message": "Unsupported column type combination."}
 
 
 @router.patch("/analysis/{upload_id}/columns/{col}/type")

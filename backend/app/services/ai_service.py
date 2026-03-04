@@ -121,41 +121,117 @@ def _build_column_profile(column_name: str, stats: dict[str, Any]) -> str:
     )
 
 
-def _key_findings_prompt(analysis: dict[str, Any], metadata: dict[str, Any]) -> tuple[str, str]:
-    profiles = "\n".join(
-        _build_column_profile(name, stats) for name, stats in analysis.get("column_stats", {}).items()
+def _computed_facts_block(analysis: dict[str, Any], metadata: dict[str, Any]) -> str:
+    summary = analysis.get("summary", {})
+    columns = analysis.get("columns", [])
+    col_stats = analysis.get("column_stats", {})
+    pre = analysis.get("pre_analysis", {})
+
+    correction = pre.get("smart_type_correction", {})
+    reclass = correction.get("reclassifications", [])
+    reclass_map = {item.get("column"): item for item in reclass}
+
+    column_lines = []
+    for item in columns:
+        col = item.get("name")
+        typ = item.get("inferred_type")
+        stats = col_stats.get(col, {})
+        rec = reclass_map.get(col)
+        rec_text = f" | reclassified: {rec.get('from')}→{rec.get('to')} ({rec.get('reason')})" if rec else ""
+        if typ == "numeric":
+            shape = (stats.get("distribution_shape") or {}).get("shape")
+            column_lines.append(
+                f"\"{col}\" | type={typ}{rec_text} | mean={stats.get('mean')}, median={stats.get('median')}, std={stats.get('std')}, range=[{stats.get('min')},{stats.get('max')}], shape={shape}, outliers={stats.get('outliers_iqr_count')}, missing={stats.get('missing_pct')}%"
+            )
+        elif typ in {"categorical", "boolean"}:
+            top = (stats.get("top_10") or [{}])[0] if stats.get("top_10") else {}
+            column_lines.append(
+                f"\"{col}\" | type={typ}{rec_text} | unique={stats.get('unique_count') or stats.get('cardinality')}, top={top.get('value')}({top.get('pct')}%), missing={stats.get('missing_pct')}%"
+            )
+        elif typ == "datetime":
+            column_lines.append(
+                f"\"{col}\" | type={typ}{rec_text} | range={stats.get('min_date')} to {stats.get('max_date')}, gaps={stats.get('gap_count')}, missing={stats.get('missing_pct')}%"
+            )
+        else:
+            column_lines.append(f"\"{col}\" | type={typ}{rec_text} | missing={stats.get('missing_pct')}%")
+
+    corr = pre.get("correlation_analysis", {})
+    top_corr = corr.get("pairs", [])[:5]
+    corr_lines = [
+        f"{item.get('col_a')}↔{item.get('col_b')}: r={item.get('pearson_r')} ({item.get('strength')})"
+        + (" [non-linear signal]" if item.get("non_linear_signal") else "")
+        for item in top_corr
+    ]
+    neg_lines = [
+        f"{item.get('col_a')}↔{item.get('col_b')}: r={item.get('pearson_r')}"
+        for item in corr.get("notable_negative", [])
+    ]
+    red_lines = [f"{item.get('col_a')}↔{item.get('col_b')} (r={item.get('pearson_r')})" for item in corr.get("redundant_pairs", [])]
+
+    effects = pre.get("group_difference_analysis", {}).get("strongest_by_category", [])
+    effect_lines = [
+        f"{item.get('categorical_column')} explains {item.get('numeric_column')} with effect={item.get('effect_size')} and means={item.get('group_means')}"
+        for item in effects
+    ]
+
+    outliers = pre.get("outlier_characterisation", {}).get("multi_column_anomalies", [])
+    outlier_lines = [f"row {item.get('row_index')} in columns {item.get('columns')}" for item in outliers]
+
+    dataset_checks = pre.get("dataset_level_checks", {})
+    sample_flags = dataset_checks.get("sample_size_flags", [])
+
+    return (
+        f"FILE: {metadata.get('file_name')}\n"
+        f"ROWS: {summary.get('rows')} | COLUMNS: {summary.get('columns')} | MEMORY: {summary.get('memory_mb')}MB\n\n"
+        f"COLUMN SUMMARY (post-reclassification):\n" + "\n".join(column_lines) + "\n\n"
+        f"CROSS-COLUMN FINDINGS:\n"
+        f"Top correlations:\n" + ("\n".join(corr_lines) if corr_lines else "none") + "\n\n"
+        f"Notable negatives:\n" + ("\n".join(neg_lines) if neg_lines else "none") + "\n\n"
+        f"Redundant pairs (|r|>0.95):\n" + ("\n".join(red_lines) if red_lines else "none") + "\n\n"
+        f"Group differences:\n" + ("\n".join(effect_lines) if effect_lines else "none") + "\n\n"
+        f"Reclassifications made:\n" + (json.dumps(reclass, default=str) if reclass else "none") + "\n\n"
+        f"Bimodal/multimodal columns:\n" + (
+            "\n".join(
+                f"{name}: {(stats.get('distribution_shape') or {}).get('shape')}"
+                for name, stats in col_stats.items()
+                if (stats.get("distribution_shape") or {}).get("shape") in {"bimodal", "multimodal"}
+            )
+            or "none"
+        )
+        + "\n\n"
+        f"Multi-column outlier rows:\n" + ("\n".join(outlier_lines) if outlier_lines else "none") + "\n\n"
+        f"Sample size flags:\n" + ("\n".join(sample_flags) if sample_flags else "none")
     )
 
+
+def _key_findings_prompt(analysis: dict[str, Any], metadata: dict[str, Any]) -> tuple[str, str]:
     system_prompt = (
-        "You are a data analyst explaining findings to a business user with no statistics background. "
-        "Be direct, specific, and use plain English. No jargon. No bullet-point lists of numbers. "
-        "Write like you're briefing a manager before a meeting."
+        "You are a statistician writing a 4-sentence briefing about a dataset. "
+        "Every claim must be grounded in the computed facts provided by the user. "
+        "Sentence 1: infer what the data likely measures from column names/value patterns; if names are ambiguous, say so. "
+        "Sentence 2: single most statistically interesting cross-column finding with actual numbers. "
+        "Sentence 3: biggest quality/interpretation risk with numbers. "
+        "Sentence 4: most useful concrete next action tied to specific columns/findings. "
+        "Never invent missing facts. Do not include filler or generic statements."
     )
     user_prompt = (
-        f"Dataset: {metadata.get('file_name')}\n"
-        f"Rows: {analysis.get('summary', {}).get('rows')} | "
-        f"Columns: {analysis.get('summary', {}).get('columns')} | "
-        f"Quality Score: {analysis.get('summary', {}).get('quality_score')}/100\n\n"
-        f"Column profiles:\n{profiles}\n\n"
-        "Generate JSON with keys: whats_in_this_data (string), top_findings (array len 3), "
-        "watch_out_for (array len up to 2), suggested_next_step (string)."
+        _computed_facts_block(analysis, metadata)
+        + "\n\nReturn strict JSON with keys: whats_in_this_data (string), top_findings (array len 3), watch_out_for (array len up to 2), suggested_next_step (string)."
     )
     return system_prompt, user_prompt
 
 
 def _column_prompt(column_name: str, stats: dict[str, Any]) -> tuple[str, str]:
     system_prompt = (
-        "You are explaining a single data column to someone who uploaded a spreadsheet "
-        "but is not a statistician. Be specific, helpful, and human. No bullet lists of numbers."
+        "You are explaining one data column to a mixed audience. "
+        "Use only supplied computed values. No fabricated numbers."
     )
     if stats.get("inferred_type") == "numeric":
         user_prompt = (
             f"Column: {column_name}\n"
-            f"Stats: mean={stats.get('mean')}, median={stats.get('median')}, std={stats.get('std')}, "
-            f"min={stats.get('min')}, max={stats.get('max')}, skewness={stats.get('skewness')}, "
-            f"outliers_iqr={stats.get('outliers_iqr_count')} out of {stats.get('count')} rows, "
-            f"missing={stats.get('missing_pct')}%\n\n"
-            "Generate JSON with keys: what_does_this_look_like, anything_unusual, what_should_i_do."
+            f"DISTRIBUTION: shape={stats.get('distribution_shape')}, mean={stats.get('mean')}, median={stats.get('median')}, mode={stats.get('mode')}, std={stats.get('std')}, "
+            f"range={stats.get('min')} to {stats.get('max')}, skewness={stats.get('skewness')}, kurtosis={stats.get('kurtosis')}, outliers_iqr={stats.get('outliers_iqr_count')}, missing={stats.get('missing_pct')}%\n\n"
+            "Write 3 short paragraphs: (1) shape/spread (2) relationships or independence (3) watch-outs. Then return JSON keys: what_does_this_look_like, anything_unusual, what_should_i_do."
         )
     else:
         top = stats.get("top_10", [])[:5]
@@ -164,7 +240,7 @@ def _column_prompt(column_name: str, stats: dict[str, Any]) -> tuple[str, str]:
             f"Top categories: {top}\n"
             f"Total unique values: {stats.get('cardinality')}\n"
             f"Missing: {stats.get('missing_pct')}%\n\n"
-            "Generate JSON with keys: what_does_this_look_like, anything_unusual, what_should_i_do."
+            "Write 2 short paragraphs: (1) composition/balance (2) what this column explains. Then return JSON keys: what_does_this_look_like, anything_unusual, what_should_i_do."
         )
     return system_prompt, user_prompt
 
@@ -266,10 +342,9 @@ def generate_chat_answer(analysis: dict[str, Any], metadata: dict[str, Any], mes
     client = Anthropic(api_key=settings.anthropic_api_key)
     history_text = "\n".join(f"{item.get('role')}: {item.get('content')}" for item in history[-10:])
     prompt = (
-        "DATASET CONTEXT:\n"
-        f"File: {metadata.get('file_name')} | Rows: {analysis.get('summary', {}).get('rows')} | Columns: {analysis.get('summary', {}).get('columns')}\n\n"
-        f"Column profiles:\n{json.dumps(analysis.get('column_stats', {}), default=str)}\n\n"
-        f"Key findings already generated:\n{json.dumps(analysis.get('key_findings', {}), default=str)}\n\n"
+        "DATASET FACTS:\n"
+        f"{_computed_facts_block(analysis, metadata)}\n\n"
+        f"KEY BRIEFING ALREADY GENERATED:\n{json.dumps(analysis.get('key_findings', {}), default=str)}\n\n"
         f"CONVERSATION HISTORY:\n{history_text}\n\n"
         f"USER QUESTION:\n{message}"
     )
@@ -279,11 +354,9 @@ def generate_chat_answer(analysis: dict[str, Any], metadata: dict[str, Any], mes
         max_tokens=700,
         temperature=0,
         system=(
-            "You are a data analyst assistant. The user has uploaded a dataset and you have "
-            "access to its full statistical profile. Answer questions conversationally in plain English. "
-            "Be concise — 2-4 sentences unless a longer answer is genuinely needed. "
-            "If you don't know something that isn't in the stats provided, say so honestly. "
-            "Never make up numbers — only use the stats you've been given."
+            "You are a data analyst assistant. Answer using only computed facts provided. "
+            "Never invent numbers. If a requested fact is absent, say: 'I don't have that information from this dataset.' "
+            "Use actual column names and values. 2-4 sentences for simple questions."
         ),
         messages=[{"role": "user", "content": prompt}],
     )

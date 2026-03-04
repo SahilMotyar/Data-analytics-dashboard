@@ -1,0 +1,1087 @@
+{
+  "summary": {
+    "rows": 150,
+    "columns": 5,
+    "memory_mb": 0.01,
+    "type_breakdown": {
+      "numeric": 4,
+      "categorical": 1
+    },
+    "quality_score": 99.78,
+    "trends": {
+      "top_correlations": [
+        {
+          "col_a": "setosa",
+          "col_b": "versicolor",
+          "r": 0.963
+        },
+        {
+          "col_a": "150",
+          "col_b": "setosa",
+          "r": 0.872
+        },
+        {
+          "col_a": "150",
+          "col_b": "versicolor",
+          "r": 0.818
+        },
+        {
+          "col_a": "4",
+          "col_b": "setosa",
+          "r": -0.428
+        },
+        {
+          "col_a": "4",
+          "col_b": "versicolor",
+          "r": -0.366
+        }
+      ],
+      "numeric_summaries": [
+        {
+          "column": "150",
+          "mean": 5.84,
+          "median": 5.8,
+          "std": 0.83,
+          "skew": 0.31
+        },
+        {
+          "column": "4",
+          "mean": 3.06,
+          "median": 3.0,
+          "std": 0.44,
+          "skew": 0.32
+        },
+        {
+          "column": "setosa",
+          "mean": 3.76,
+          "median": 4.35,
+          "std": 1.77,
+          "skew": -0.27
+        },
+        {
+          "column": "versicolor",
+          "mean": 1.2,
+          "median": 1.3,
+          "std": 0.76,
+          "skew": -0.1
+        }
+      ],
+      "category_dominance": [
+        {
+          "column": "virginica",
+          "top_value": "0",
+          "top_pct": 33.3,
+          "unique": 3
+        }
+      ]
+    }
+  },
+  "analysis_mode": "full",
+  "focus_columns": [
+    "versicolor",
+    "setosa",
+    "virginica",
+    "4",
+    "150"
+  ],
+  "pre_analysis": {
+    "smart_type_correction": {
+      "final_types": {
+        "150": "numeric",
+        "4": "numeric",
+        "setosa": "numeric",
+        "versicolor": "numeric",
+        "virginica": "categorical"
+      },
+      "reclassifications": [
+        {
+          "column": "virginica",
+          "from": "numeric",
+          "to": "categorical",
+          "reason": "numeric with <=10 whole-number distinct values",
+          "message": "virginica contains only 3 distinct whole-number values \u2014 treating as categories, not measurements."
+        }
+      ],
+      "excluded_columns": [],
+      "high_missing_flags": [],
+      "constant_flags": [],
+      "free_text_flags": [],
+      "percentage_flags": []
+    },
+    "correlation_analysis": {
+      "eligible_numeric_columns": [
+        "150",
+        "4",
+        "setosa",
+        "versicolor"
+      ],
+      "ordinal_columns": [
+        "virginica"
+      ],
+      "pairs": [
+        {
+          "col_a": "setosa",
+          "col_b": "versicolor",
+          "pearson_r": 0.9629,
+          "spearman_rho": 0.9377,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "versicolor",
+          "col_b": "virginica",
+          "pearson_r": 0.9565,
+          "spearman_rho": 0.9382,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        },
+        {
+          "col_a": "setosa",
+          "col_b": "virginica",
+          "pearson_r": 0.949,
+          "spearman_rho": 0.9354,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        },
+        {
+          "col_a": "150",
+          "col_b": "setosa",
+          "pearson_r": 0.8718,
+          "spearman_rho": 0.8819,
+          "strength": "strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "150",
+          "col_b": "versicolor",
+          "pearson_r": 0.8179,
+          "spearman_rho": 0.8343,
+          "strength": "strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "150",
+          "col_b": "virginica",
+          "pearson_r": 0.7826,
+          "spearman_rho": 0.7981,
+          "strength": "strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        },
+        {
+          "col_a": "4",
+          "col_b": "setosa",
+          "pearson_r": -0.4284,
+          "spearman_rho": -0.3096,
+          "strength": "weak",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "4",
+          "col_b": "virginica",
+          "pearson_r": -0.4267,
+          "spearman_rho": -0.4403,
+          "strength": "weak",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        },
+        {
+          "col_a": "4",
+          "col_b": "versicolor",
+          "pearson_r": -0.3661,
+          "spearman_rho": -0.289,
+          "strength": "weak",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "150",
+          "col_b": "4",
+          "pearson_r": -0.1176,
+          "spearman_rho": -0.1668,
+          "strength": "weak_none",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        }
+      ],
+      "top_positive": [
+        {
+          "col_a": "setosa",
+          "col_b": "versicolor",
+          "pearson_r": 0.9629,
+          "spearman_rho": 0.9377,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "versicolor",
+          "col_b": "virginica",
+          "pearson_r": 0.9565,
+          "spearman_rho": 0.9382,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        },
+        {
+          "col_a": "setosa",
+          "col_b": "virginica",
+          "pearson_r": 0.949,
+          "spearman_rho": 0.9354,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        }
+      ],
+      "notable_negative": [],
+      "redundant_pairs": [
+        {
+          "col_a": "setosa",
+          "col_b": "versicolor",
+          "pearson_r": 0.9629,
+          "spearman_rho": 0.9377,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": false
+        },
+        {
+          "col_a": "versicolor",
+          "col_b": "virginica",
+          "pearson_r": 0.9565,
+          "spearman_rho": 0.9382,
+          "strength": "very_strong",
+          "negative": false,
+          "non_linear_signal": false,
+          "includes_ordinal": true
+        }
+      ],
+      "non_linear_pairs": []
+    },
+    "group_difference_analysis": {
+      "findings": [
+        {
+          "categorical_column": "virginica",
+          "numeric_column": "versicolor",
+          "effect_size": 2.3352,
+          "effect_label": "large",
+          "group_means": [
+            {
+              "group": "0.0",
+              "mean": 0.246,
+              "std": 0.1054,
+              "count": 50
+            },
+            {
+              "group": "1.0",
+              "mean": 1.326,
+              "std": 0.1978,
+              "count": 50
+            },
+            {
+              "group": "2.0",
+              "mean": 2.026,
+              "std": 0.2747,
+              "count": 50
+            }
+          ],
+          "variance_alerts": []
+        },
+        {
+          "categorical_column": "virginica",
+          "numeric_column": "setosa",
+          "effect_size": 2.3169,
+          "effect_label": "large",
+          "group_means": [
+            {
+              "group": "0.0",
+              "mean": 1.462,
+              "std": 0.1737,
+              "count": 50
+            },
+            {
+              "group": "1.0",
+              "mean": 4.26,
+              "std": 0.4699,
+              "count": 50
+            },
+            {
+              "group": "2.0",
+              "mean": 5.552,
+              "std": 0.5519,
+              "count": 50
+            }
+          ],
+          "variance_alerts": [
+            {
+              "message": "Values are much more spread out in 2.0 than 0.0.",
+              "max_group": "2.0",
+              "min_group": "0.0",
+              "ratio": 3.18
+            }
+          ]
+        },
+        {
+          "categorical_column": "virginica",
+          "numeric_column": "150",
+          "effect_size": 1.9105,
+          "effect_label": "large",
+          "group_means": [
+            {
+              "group": "0.0",
+              "mean": 5.006,
+              "std": 0.3525,
+              "count": 50
+            },
+            {
+              "group": "1.0",
+              "mean": 5.936,
+              "std": 0.5162,
+              "count": 50
+            },
+            {
+              "group": "2.0",
+              "mean": 6.588,
+              "std": 0.6359,
+              "count": 50
+            }
+          ],
+          "variance_alerts": []
+        },
+        {
+          "categorical_column": "virginica",
+          "numeric_column": "4",
+          "effect_size": 1.5096,
+          "effect_label": "large",
+          "group_means": [
+            {
+              "group": "0.0",
+              "mean": 3.428,
+              "std": 0.3791,
+              "count": 50
+            },
+            {
+              "group": "1.0",
+              "mean": 2.77,
+              "std": 0.3138,
+              "count": 50
+            },
+            {
+              "group": "2.0",
+              "mean": 2.974,
+              "std": 0.3225,
+              "count": 50
+            }
+          ],
+          "variance_alerts": []
+        }
+      ],
+      "strongest_by_category": [
+        {
+          "categorical_column": "virginica",
+          "numeric_column": "versicolor",
+          "effect_size": 2.3352,
+          "effect_label": "large",
+          "group_means": [
+            {
+              "group": "0.0",
+              "mean": 0.246,
+              "std": 0.1054,
+              "count": 50
+            },
+            {
+              "group": "1.0",
+              "mean": 1.326,
+              "std": 0.1978,
+              "count": 50
+            },
+            {
+              "group": "2.0",
+              "mean": 2.026,
+              "std": 0.2747,
+              "count": 50
+            }
+          ],
+          "variance_alerts": []
+        }
+      ]
+    },
+    "outlier_characterisation": {
+      "outliers_by_column": {
+        "4": {
+          "count": 4,
+          "outlier_pct": 2.67,
+          "lower_bound": 2.05,
+          "upper_bound": 4.05,
+          "details": [
+            {
+              "row_index": 15,
+              "value": 4.4,
+              "z_score": 3.08,
+              "percentile": 100.0,
+              "likely_data_error": false,
+              "likely_genuine_extreme": true
+            },
+            {
+              "row_index": 32,
+              "value": 4.1,
+              "z_score": 2.392,
+              "percentile": 98.67,
+              "likely_data_error": false,
+              "likely_genuine_extreme": true
+            },
+            {
+              "row_index": 33,
+              "value": 4.2,
+              "z_score": 2.622,
+              "percentile": 99.33,
+              "likely_data_error": false,
+              "likely_genuine_extreme": true
+            },
+            {
+              "row_index": 60,
+              "value": 2.0,
+              "z_score": -2.426,
+              "percentile": 0.67,
+              "likely_data_error": false,
+              "likely_genuine_extreme": true
+            }
+          ],
+          "summary": {
+            "listed_values": [
+              {
+                "row_index": 15,
+                "value": 4.4,
+                "z_score": 3.08,
+                "percentile": 100.0,
+                "likely_data_error": false,
+                "likely_genuine_extreme": true
+              },
+              {
+                "row_index": 32,
+                "value": 4.1,
+                "z_score": 2.392,
+                "percentile": 98.67,
+                "likely_data_error": false,
+                "likely_genuine_extreme": true
+              },
+              {
+                "row_index": 33,
+                "value": 4.2,
+                "z_score": 2.622,
+                "percentile": 99.33,
+                "likely_data_error": false,
+                "likely_genuine_extreme": true
+              },
+              {
+                "row_index": 60,
+                "value": 2.0,
+                "z_score": -2.426,
+                "percentile": 0.67,
+                "likely_data_error": false,
+                "likely_genuine_extreme": true
+              }
+            ]
+          }
+        }
+      },
+      "multi_column_anomalies": []
+    },
+    "dataset_level_checks": {
+      "duplicate_columns": [],
+      "datetime_checks": [],
+      "sample_size_flags": [],
+      "class_imbalance": []
+    },
+    "name_quality_flag": "Column names are not descriptive \u2014 interpretations are based purely on value patterns, not column names."
+  },
+  "columns": [
+    {
+      "name": "150",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "4",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "setosa",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "versicolor",
+      "inferred_type": "numeric",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    },
+    {
+      "name": "virginica",
+      "inferred_type": "categorical",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "quality_flags": {
+        "missing_pct": 0.0,
+        "missing_warn": false,
+        "constant": false,
+        "high_cardinality": false,
+        "potential_id": false
+      }
+    }
+  ],
+  "column_stats": {
+    "150": {
+      "column": "150",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 5.843333333333334,
+      "median": 5.8,
+      "mode": 5.0,
+      "std": 0.828066127977863,
+      "variance": 0.6856935123042507,
+      "min": 4.3,
+      "max": 7.9,
+      "range": 3.6000000000000005,
+      "q1": 5.1,
+      "q2": 5.8,
+      "q3": 6.4,
+      "iqr": 1.3000000000000007,
+      "skewness": 0.3149109566369728,
+      "kurtosis": -0.5520640413156395,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "distribution_shape": {
+        "shape": "unimodal_normal",
+        "modes": 1,
+        "message": "Unimodal and approximately symmetric."
+      },
+      "chart_histogram_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/150_hist.png",
+      "chart_boxplot_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/150_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 5.8 while the average is 5.843333333333334. Values span from 4.3 to 7.9 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      }
+    },
+    "4": {
+      "column": "4",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 3.0573333333333337,
+      "median": 3.0,
+      "mode": 3.0,
+      "std": 0.4358662849366982,
+      "variance": 0.189979418344519,
+      "min": 2.0,
+      "max": 4.4,
+      "range": 2.4000000000000004,
+      "q1": 2.8,
+      "q2": 3.0,
+      "q3": 3.3,
+      "iqr": 0.5,
+      "skewness": 0.31896566471359966,
+      "kurtosis": 0.2282490424681929,
+      "outliers_iqr_count": 4,
+      "outliers_zscore_count": 1,
+      "distribution_shape": {
+        "shape": "unimodal_normal",
+        "modes": 1,
+        "message": "Unimodal and approximately symmetric."
+      },
+      "chart_histogram_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/4_hist.png",
+      "chart_boxplot_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/4_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Some outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "warning",
+          "dot": "\ud83d\udfe1",
+          "label": "Needs attention"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 3.0 while the average is 3.0573333333333337. Values span from 2.0 to 4.4 with 0.0% missing entries.",
+        "anything_unusual": "There are 4 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      }
+    },
+    "setosa": {
+      "column": "setosa",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 3.7580000000000005,
+      "median": 4.35,
+      "mode": 1.4,
+      "std": 1.7652982332594662,
+      "variance": 3.116277852348993,
+      "min": 1.0,
+      "max": 6.9,
+      "range": 5.9,
+      "q1": 1.6,
+      "q2": 4.35,
+      "q3": 5.1,
+      "iqr": 3.4999999999999996,
+      "skewness": -0.27488417975101276,
+      "kurtosis": -1.4021034155217518,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "distribution_shape": {
+        "shape": "unimodal",
+        "modes": 1
+      },
+      "chart_histogram_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/setosa_hist.png",
+      "chart_boxplot_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/setosa_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 4.35 while the average is 3.7580000000000005. Values span from 1.0 to 6.9 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      }
+    },
+    "versicolor": {
+      "column": "versicolor",
+      "inferred_type": "numeric",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mean": 1.1993333333333336,
+      "median": 1.3,
+      "mode": 0.2,
+      "std": 0.7622376689603465,
+      "variance": 0.5810062639821029,
+      "min": 0.1,
+      "max": 2.5,
+      "range": 2.4,
+      "q1": 0.3,
+      "q2": 1.3,
+      "q3": 1.8,
+      "iqr": 1.5,
+      "skewness": -0.10296674764898116,
+      "kurtosis": -1.340603996612646,
+      "outliers_iqr_count": 0,
+      "outliers_zscore_count": 0,
+      "distribution_shape": {
+        "shape": "unimodal",
+        "modes": 1
+      },
+      "chart_histogram_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/versicolor_hist.png",
+      "chart_boxplot_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/versicolor_box.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No notable outliers"
+        },
+        "distribution": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Mostly balanced"
+        },
+        "cardinality": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 1.3 while the average is 1.1993333333333336. Values span from 0.1 to 2.5 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      }
+    },
+    "virginica": {
+      "column": "virginica",
+      "inferred_type": "categorical",
+      "count": 150,
+      "missing_count": 0,
+      "missing_pct": 0.0,
+      "mode": "0",
+      "cardinality": 3,
+      "unique_count": 3,
+      "top_10": [
+        {
+          "value": "0",
+          "count": 50,
+          "pct": 33.33
+        },
+        {
+          "value": "1",
+          "count": 50,
+          "pct": 33.33
+        },
+        {
+          "value": "2",
+          "count": 50,
+          "pct": 33.33
+        }
+      ],
+      "frequency_table": [
+        {
+          "value": "0",
+          "count": 50,
+          "pct": 33.33
+        },
+        {
+          "value": "1",
+          "count": 50,
+          "pct": 33.33
+        },
+        {
+          "value": "2",
+          "count": 50,
+          "pct": 33.33
+        }
+      ],
+      "chart_bar_url": "/static/3ac12e75-b697-4201-b997-136c097090e4/virginica_bar.png",
+      "health": {
+        "missing": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "No missing values"
+        },
+        "outliers": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "distribution": {
+          "status": "na",
+          "dot": "\u26aa",
+          "label": "Not applicable"
+        },
+        "cardinality": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Cardinality looks good"
+        },
+        "overall": {
+          "status": "good",
+          "dot": "\ud83d\udfe2",
+          "label": "Healthy"
+        }
+      },
+      "ai_summary": {
+        "what_does_this_look_like": "Most values sit around 1.0 while the average is 1.0. Values span from 0.0 to 2.0 with 0.0% missing entries.",
+        "anything_unusual": "There are 0 values that sit far from the typical range.",
+        "what_should_i_do": "Review outliers before using averages for business decisions."
+      }
+    }
+  },
+  "quality_flags": {
+    "missing": {
+      "150": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "4": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "setosa": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "versicolor": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      },
+      "virginica": {
+        "count": 0,
+        "pct": 0.0,
+        "warn": false
+      }
+    },
+    "duplicates": {
+      "count": 1,
+      "pct": 0.67
+    },
+    "constant_columns": [],
+    "high_cardinality_columns": [],
+    "potential_id_columns": []
+  },
+  "cleaning": {
+    "type_mismatches": {}
+  },
+  "cleaned_csv_path": "/static/3ac12e75-b697-4201-b997-136c097090e4/cleaned.csv",
+  "key_findings": {
+    "whats_in_this_data": "iris.csv includes operational records with mixed data types. You can use it for trend and category analysis after quick cleanup checks.",
+    "top_findings": [
+      "The dataset contains 150 rows across 5 columns.",
+      "Overall quality score is 99.78 out of 100.",
+      "A small set of columns appears to need cleanup before reporting."
+    ],
+    "watch_out_for": [
+      "4 needs attention: Needs attention"
+    ],
+    "suggested_next_step": "Review the red and yellow health columns first, then rerun summaries."
+  },
+  "dataset_overview": "The dataset has 150 rows and 5 columns with memory usage around 0.01 MB. The overall quality score is 99.78 out of 100. Main issues include missing data and potential high-cardinality or identifier-like columns."
+}

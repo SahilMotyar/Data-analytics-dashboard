@@ -12,7 +12,8 @@ matplotlib.use("Agg")  # non-interactive backend for thread safety
 import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib import ticker
-from scipy.stats import zscore
+from scipy.signal import find_peaks
+from scipy.stats import gaussian_kde, linregress, zscore
 
 from app.core.config import settings
 from app.core.storage import read_json, write_json
@@ -172,6 +173,582 @@ def _infer_column_type(series: pd.Series) -> str:
         return "free_text"
 
     return "categorical"
+
+
+def _is_integer_like(series: pd.Series) -> bool:
+    clean = pd.to_numeric(series, errors="coerce").dropna()
+    if clean.empty:
+        return False
+    return bool(np.all(np.isclose(clean, np.round(clean))))
+
+
+def _looks_like_sequential(series: pd.Series) -> bool:
+    clean = pd.to_numeric(series, errors="coerce").dropna()
+    if clean.empty or not _is_integer_like(clean):
+        return False
+    ordered = np.sort(clean.to_numpy())
+    diffs = np.diff(ordered)
+    if len(diffs) == 0:
+        return False
+    return bool(np.mean(diffs == 1) >= 0.95)
+
+
+def _name_suggests_id(column_name: str) -> bool:
+    name = column_name.lower()
+    tokens = ["id", "index", "no", "num", "#", "row", "key", "ref", "code"]
+    return any(token in name for token in tokens)
+
+
+def _is_percentage_column(column_name: str, series: pd.Series) -> bool:
+    name = column_name.lower()
+    hint = any(token in name for token in ["pct", "percent", "rate", "ratio", "share", "proportion"])
+    if not hint:
+        return False
+    clean = pd.to_numeric(series, errors="coerce").dropna()
+    if clean.empty:
+        return False
+    in_zero_one = bool((clean.between(0, 1)).all())
+    in_zero_hundred = bool((clean.between(0, 100)).all())
+    return in_zero_one or in_zero_hundred
+
+
+def _smart_type_correction(dataframe: pd.DataFrame, inferred_types: dict[str, str]) -> dict[str, Any]:
+    row_count = len(dataframe)
+    final_types = inferred_types.copy()
+    reclassifications: list[dict[str, Any]] = []
+    excluded_columns: list[dict[str, str]] = []
+    high_missing_flags: list[dict[str, Any]] = []
+    constant_flags: list[dict[str, Any]] = []
+    text_flags: list[dict[str, Any]] = []
+    percentage_flags: list[dict[str, Any]] = []
+
+    for column in dataframe.columns:
+        series = dataframe[column]
+        non_null = series.dropna()
+        unique_count = int(non_null.nunique())
+        missing_pct = round(float(series.isna().mean() * 100), 2)
+        original_type = final_types.get(column, "categorical")
+
+        if missing_pct > 40:
+            high_missing_flags.append({
+                "column": column,
+                "missing_pct": missing_pct,
+                "message": f"{column} has {missing_pct}% missing values; findings may be unstable.",
+            })
+
+        if unique_count <= 1:
+            final_types[column] = "constant"
+            constant_flags.append({
+                "column": column,
+                "message": "This column has only one value — carries no information.",
+            })
+            excluded_columns.append({"column": column, "reason": "constant column"})
+            if original_type != "constant":
+                reclassifications.append({
+                    "column": column,
+                    "from": original_type,
+                    "to": "constant",
+                    "reason": "unique_count == 1",
+                    "message": "This column has only one value — carries no information.",
+                })
+            continue
+
+        if unique_count == row_count and (_looks_like_sequential(series) or (_name_suggests_id(column) and unique_count == row_count)):
+            final_types[column] = "id"
+            excluded_columns.append({"column": column, "reason": "row identifier"})
+            if original_type != "id":
+                reclassifications.append({
+                    "column": column,
+                    "from": original_type,
+                    "to": "id",
+                    "reason": "unique_count == row_count and identifier pattern",
+                    "message": f"Excluded {column} — looks like a row identifier, not a measurement.",
+                })
+            continue
+
+        numeric_clean = pd.to_numeric(series, errors="coerce")
+        numeric_ratio = float(numeric_clean.notna().mean())
+
+        if unique_count == 2 and numeric_ratio > 0.95:
+            values = set(numeric_clean.dropna().astype(int).tolist())
+            if values.issubset({0, 1}) or values.issubset({-1, 1}):
+                final_types[column] = "boolean"
+                if original_type != "boolean":
+                    reclassifications.append({
+                        "column": column,
+                        "from": original_type,
+                        "to": "boolean",
+                        "reason": "binary integer values in {0,1} or {-1,1}",
+                        "message": f"{column} has binary integer values — treating as boolean.",
+                    })
+                continue
+
+        if original_type == "numeric" and unique_count <= 10 and _is_integer_like(series):
+            final_types[column] = "categorical"
+            reclassifications.append({
+                "column": column,
+                "from": original_type,
+                "to": "categorical",
+                "reason": "numeric with <=10 whole-number distinct values",
+                "message": f"{column} contains only {unique_count} distinct whole-number values — treating as categories, not measurements.",
+            })
+            continue
+
+        if original_type != "datetime" and _regex_datetime_ratio(series) >= 0.8:
+            final_types[column] = "datetime"
+            if original_type != "datetime":
+                reclassifications.append({
+                    "column": column,
+                    "from": original_type,
+                    "to": "datetime",
+                    "reason": ">80% values match date patterns",
+                    "message": f"{column} detected as date-like values — treating as datetime.",
+                })
+            continue
+
+        if _is_percentage_column(column, series):
+            percentage_flags.append({
+                "column": column,
+                "message": f"{column} appears to be a percentage/rate column; visual scales should use percent labels.",
+            })
+
+        if pd.api.types.is_string_dtype(series) or pd.api.types.is_object_dtype(series):
+            mean_len = float(non_null.astype(str).str.len().mean()) if not non_null.empty else 0.0
+            if mean_len > 50:
+                final_types[column] = "free_text"
+                text_flags.append({
+                    "column": column,
+                    "message": "This column contains free text — consider NLP analysis separately.",
+                })
+
+    return {
+        "final_types": final_types,
+        "reclassifications": reclassifications,
+        "excluded_columns": excluded_columns,
+        "high_missing_flags": high_missing_flags,
+        "constant_flags": constant_flags,
+        "free_text_flags": text_flags,
+        "percentage_flags": percentage_flags,
+    }
+
+
+def _kde_mode_count(values: pd.Series) -> tuple[int, list[float]]:
+    clean = pd.to_numeric(values, errors="coerce").dropna()
+    if len(clean) < 20:
+        return 1, []
+    arr = clean.to_numpy(dtype=float)
+    x_grid = np.linspace(np.min(arr), np.max(arr), 256)
+    try:
+        kde = gaussian_kde(arr)
+        y = kde(x_grid)
+    except Exception:
+        return 1, []
+
+    peaks, _ = find_peaks(y)
+    if len(peaks) <= 1:
+        return 1, x_grid[peaks].tolist() if len(peaks) else []
+
+    kept = [int(peaks[0])]
+    for current in peaks[1:]:
+        prev = kept[-1]
+        left, right = sorted([prev, int(current)])
+        valley = float(np.min(y[left:right + 1])) if right > left else float(y[left])
+        lower_peak = float(min(y[prev], y[current]))
+        if lower_peak <= 0:
+            kept.append(int(current))
+            continue
+        valley_ratio = valley / lower_peak
+        if valley_ratio < 0.2:
+            kept.append(int(current))
+
+    return len(kept), x_grid[kept].tolist()
+
+
+def _classify_distribution_shape(series: pd.Series) -> dict[str, Any]:
+    clean = pd.to_numeric(series, errors="coerce").dropna()
+    if clean.empty:
+        return {"shape": "unknown", "modes": 0}
+
+    unique_count = int(clean.nunique())
+    mean_val = float(clean.mean()) if len(clean) else 0.0
+    std_val = float(clean.std()) if len(clean) else 0.0
+    skewness = float(clean.skew()) if len(clean) > 2 else 0.0
+    kurtosis = float(clean.kurtosis()) if len(clean) > 3 else 0.0
+
+    if unique_count < 15 and _is_integer_like(clean):
+        return {
+            "shape": "discrete_ordinal",
+            "modes": unique_count,
+            "message": "Discrete/ordinal values detected; bar chart is preferred over histogram.",
+        }
+
+    if mean_val != 0 and abs(std_val / mean_val) < 0.01:
+        return {
+            "shape": "near_constant",
+            "modes": 1,
+            "message": "Almost no variation — may not be useful.",
+        }
+
+    modes, mode_positions = _kde_mode_count(clean)
+
+    q1, q3 = clean.quantile(0.25), clean.quantile(0.75)
+    iqr = q3 - q1
+    if iqr == 0:
+        uniform_like = False
+    else:
+        hist, _ = np.histogram(clean, bins=min(12, max(5, unique_count // 3)))
+        uniform_like = float(np.std(hist) / max(np.mean(hist), 1e-9)) < 0.2
+
+    if uniform_like:
+        return {"shape": "uniform", "modes": modes, "mode_positions": mode_positions, "message": "Values are roughly flat/uniform."}
+    if modes >= 3:
+        return {
+            "shape": "multimodal",
+            "modes": modes,
+            "mode_positions": mode_positions,
+            "message": "Multiple distinct subgroups detected.",
+            "priority": "high",
+        }
+    if modes == 2:
+        return {
+            "shape": "bimodal",
+            "modes": 2,
+            "mode_positions": mode_positions,
+            "message": "Two subgroups may be hidden in this column.",
+            "priority": "high",
+        }
+    if kurtosis > 3:
+        return {"shape": "unimodal_heavy_tailed", "modes": 1, "message": "Leptokurtic/heavy-tailed distribution."}
+    if abs(skewness) >= 0.5:
+        direction = "right" if skewness > 0 else "left"
+        return {"shape": "unimodal_skewed", "modes": 1, "skew_direction": direction, "message": f"Unimodal but {direction}-skewed."}
+    if -1 <= kurtosis <= 1 and abs(skewness) < 0.5:
+        return {"shape": "unimodal_normal", "modes": 1, "message": "Unimodal and approximately symmetric."}
+    return {"shape": "unimodal", "modes": 1}
+
+
+def _correlation_analysis(dataframe: pd.DataFrame, final_types: dict[str, str], high_missing_threshold: float = 30.0) -> dict[str, Any]:
+    eligible_numeric = []
+    ordinal_candidates = []
+    for col, typ in final_types.items():
+        if typ == "numeric":
+            pass
+        elif typ == "categorical":
+            numeric_col = pd.to_numeric(dataframe[col], errors="coerce")
+            if numeric_col.notna().mean() > 0.95 and _is_integer_like(numeric_col) and int(numeric_col.dropna().nunique()) <= 15:
+                ordinal_candidates.append(col)
+                continue
+            else:
+                continue
+        else:
+            continue
+        if round(float(dataframe[col].isna().mean() * 100), 2) > high_missing_threshold:
+            continue
+        eligible_numeric.append(col)
+
+    eligible_all = list(dict.fromkeys(eligible_numeric + ordinal_candidates))
+
+    pairs: list[dict[str, Any]] = []
+    redundant_pairs: list[dict[str, Any]] = []
+    notable_negative: list[dict[str, Any]] = []
+    nonlinear_pairs: list[dict[str, Any]] = []
+
+    for idx, col_a in enumerate(eligible_all):
+        for col_b in eligible_all[idx + 1:]:
+            pair_df = dataframe[[col_a, col_b]].copy()
+            pair_df[col_a] = pd.to_numeric(pair_df[col_a], errors="coerce")
+            pair_df[col_b] = pd.to_numeric(pair_df[col_b], errors="coerce")
+            pair_df = pair_df.dropna()
+            if len(pair_df) < 5:
+                continue
+            pearson = float(pair_df[col_a].corr(pair_df[col_b], method="pearson"))
+            spearman = float(pair_df[col_a].corr(pair_df[col_b], method="spearman"))
+            abs_r = abs(pearson)
+            if abs_r >= 0.9:
+                strength = "very_strong"
+            elif abs_r >= 0.7:
+                strength = "strong"
+            elif abs_r >= 0.5:
+                strength = "moderate"
+            elif abs_r < 0.3:
+                strength = "weak_none"
+            else:
+                strength = "weak"
+            item = {
+                "col_a": col_a,
+                "col_b": col_b,
+                "pearson_r": round(pearson, 4),
+                "spearman_rho": round(spearman, 4),
+                "strength": strength,
+                "negative": pearson <= -0.5,
+                "non_linear_signal": abs(spearman - pearson) > 0.2,
+                "includes_ordinal": col_a in ordinal_candidates or col_b in ordinal_candidates,
+            }
+            pairs.append(item)
+
+            if abs_r > 0.95:
+                redundant_pairs.append(item)
+            if pearson <= -0.5:
+                notable_negative.append(item)
+            if abs(spearman - pearson) > 0.2:
+                nonlinear_pairs.append(item)
+
+    pairs_sorted = sorted(pairs, key=lambda item: abs(item["pearson_r"]), reverse=True)
+    return {
+        "eligible_numeric_columns": eligible_numeric,
+        "ordinal_columns": ordinal_candidates,
+        "pairs": pairs_sorted,
+        "top_positive": [item for item in pairs_sorted if item["pearson_r"] > 0][:3],
+        "notable_negative": notable_negative,
+        "redundant_pairs": redundant_pairs,
+        "non_linear_pairs": nonlinear_pairs,
+    }
+
+
+def _group_difference_analysis(dataframe: pd.DataFrame, final_types: dict[str, str]) -> dict[str, Any]:
+    categorical_cols = [col for col, typ in final_types.items() if typ in {"categorical", "boolean"}]
+    numeric_cols = [col for col, typ in final_types.items() if typ == "numeric"]
+    findings: list[dict[str, Any]] = []
+    strongest_by_category: list[dict[str, Any]] = []
+
+    for cat_col in categorical_cols:
+        cat_best: dict[str, Any] | None = None
+        for num_col in numeric_cols:
+            sub = dataframe[[cat_col, num_col]].copy()
+            sub[num_col] = pd.to_numeric(sub[num_col], errors="coerce")
+            sub = sub.dropna()
+            if sub.empty:
+                continue
+            grouped = sub.groupby(cat_col)[num_col].agg(["mean", "std", "count"]).reset_index()
+            if len(grouped) < 2:
+                continue
+            overall_std = float(sub[num_col].std())
+            if overall_std == 0 or np.isnan(overall_std):
+                effect_size = 0.0
+            else:
+                effect_size = float((grouped["mean"].max() - grouped["mean"].min()) / overall_std)
+
+            if effect_size >= 1.0:
+                effect_label = "large"
+            elif effect_size >= 0.5:
+                effect_label = "medium"
+            elif effect_size >= 0.2:
+                effect_label = "small"
+            else:
+                effect_label = "similar"
+
+            variance_alerts = []
+            std_nonzero = grouped[grouped["std"] > 0]
+            if len(std_nonzero) >= 2:
+                max_std_row = std_nonzero.loc[std_nonzero["std"].idxmax()]
+                min_std_row = std_nonzero.loc[std_nonzero["std"].idxmin()]
+                if float(max_std_row["std"]) >= 3 * float(min_std_row["std"]):
+                    variance_alerts.append(
+                        {
+                            "message": f"Values are much more spread out in {max_std_row[cat_col]} than {min_std_row[cat_col]}.",
+                            "max_group": str(max_std_row[cat_col]),
+                            "min_group": str(min_std_row[cat_col]),
+                            "ratio": round(float(max_std_row["std"] / min_std_row["std"]), 2),
+                        }
+                    )
+
+            item = {
+                "categorical_column": cat_col,
+                "numeric_column": num_col,
+                "effect_size": round(effect_size, 4),
+                "effect_label": effect_label,
+                "group_means": [
+                    {
+                        "group": str(row[cat_col]),
+                        "mean": round(float(row["mean"]), 4),
+                        "std": round(float(row["std"]), 4) if not np.isnan(float(row["std"])) else None,
+                        "count": int(row["count"]),
+                    }
+                    for _, row in grouped.iterrows()
+                ],
+                "variance_alerts": variance_alerts,
+            }
+            findings.append(item)
+            if cat_best is None or item["effect_size"] > cat_best["effect_size"]:
+                cat_best = item
+
+        if cat_best is not None:
+            strongest_by_category.append(cat_best)
+
+    return {
+        "findings": sorted(findings, key=lambda item: item["effect_size"], reverse=True),
+        "strongest_by_category": strongest_by_category,
+    }
+
+
+def _outlier_characterisation(dataframe: pd.DataFrame, final_types: dict[str, str]) -> dict[str, Any]:
+    numeric_cols = [col for col, typ in final_types.items() if typ == "numeric"]
+    outliers_by_column: dict[str, Any] = {}
+    row_hits: dict[int, list[str]] = {}
+
+    for col in numeric_cols:
+        series = pd.to_numeric(dataframe[col], errors="coerce")
+        clean = series.dropna()
+        if clean.empty:
+            continue
+        q1, q3 = clean.quantile(0.25), clean.quantile(0.75)
+        iqr = q3 - q1
+        if iqr == 0:
+            continue
+        lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+        mask = (series < lower) | (series > upper)
+        outlier_rows = dataframe.index[mask.fillna(False)].tolist()
+        outlier_values = series[mask.fillna(False)]
+        if len(outlier_rows) == 0:
+            continue
+
+        mean_v = float(clean.mean())
+        std_v = float(clean.std()) if float(clean.std()) != 0 else 1e-9
+        p99 = float(clean.quantile(0.99))
+
+        details = []
+        for idx, value in outlier_values.items():
+            z = float((value - mean_v) / std_v)
+            percentile = round(float((clean <= value).mean() * 100), 2)
+            likely_error = bool(value > 3 * p99) if p99 > 0 else False
+            details.append(
+                {
+                    "row_index": int(idx),
+                    "value": float(value),
+                    "z_score": round(z, 3),
+                    "percentile": percentile,
+                    "likely_data_error": likely_error,
+                    "likely_genuine_extreme": not likely_error,
+                }
+            )
+            row_hits.setdefault(int(idx), []).append(col)
+
+        outlier_pct = round(float((len(outlier_rows) / max(len(dataframe), 1)) * 100), 2)
+        summary_payload: dict[str, Any]
+        if len(details) <= 10:
+            summary_payload = {"listed_values": details}
+        else:
+            vals = [item["value"] for item in details]
+            summary_payload = {
+                "count": len(details),
+                "min_outlier": float(min(vals)),
+                "max_outlier": float(max(vals)),
+                "outlier_pct": outlier_pct,
+            }
+
+        outliers_by_column[col] = {
+            "count": len(details),
+            "outlier_pct": outlier_pct,
+            "lower_bound": float(lower),
+            "upper_bound": float(upper),
+            "details": details,
+            "summary": summary_payload,
+        }
+
+    multi_column_anomalies = [
+        {"row_index": row_idx, "columns": cols}
+        for row_idx, cols in row_hits.items()
+        if len(cols) >= 2
+    ]
+    return {"outliers_by_column": outliers_by_column, "multi_column_anomalies": multi_column_anomalies}
+
+
+def _dataset_level_checks(dataframe: pd.DataFrame, final_types: dict[str, str]) -> dict[str, Any]:
+    duplicate_columns: list[dict[str, str]] = []
+    cols = list(dataframe.columns)
+    for i, col_a in enumerate(cols):
+        for col_b in cols[i + 1:]:
+            if dataframe[col_a].equals(dataframe[col_b]):
+                duplicate_columns.append({"col_a": col_a, "col_b": col_b, "message": "Columns are exactly identical."})
+
+    sample_size_flags = []
+    if len(dataframe) < 30:
+        sample_size_flags.append("Warning: Very small dataset. Statistical patterns may not be reliable.")
+    elif len(dataframe) < 100:
+        sample_size_flags.append("Small dataset — correlations and distributions may shift with more data.")
+
+    class_imbalance = []
+    for col, typ in final_types.items():
+        if typ not in {"categorical", "boolean"}:
+            continue
+        counts = dataframe[col].value_counts(dropna=True)
+        if counts.empty:
+            continue
+        top_val = str(counts.index[0])
+        top_pct = round(float((counts.iloc[0] / counts.sum()) * 100), 2)
+        if top_pct > 80:
+            class_imbalance.append(
+                {
+                    "column": col,
+                    "top_category": top_val,
+                    "top_pct": top_pct,
+                    "message": f"Heavy imbalance: {top_val} makes up {top_pct}% of rows.",
+                }
+            )
+
+    datetime_checks = []
+    dt_cols = [col for col, typ in final_types.items() if typ == "datetime"]
+    num_cols = [col for col, typ in final_types.items() if typ == "numeric"]
+    target_col = num_cols[0] if num_cols else None
+    for col in dt_cols:
+        dt = pd.to_datetime(dataframe[col], errors="coerce").dropna().sort_values()
+        if dt.empty:
+            continue
+        diffs = dt.diff().dropna()
+        if diffs.empty:
+            continue
+        med_days = max(int(diffs.median().days), 1)
+        if med_days <= 1:
+            freq = "D"
+            expected_label = "daily"
+        elif med_days <= 7:
+            freq = "W"
+            expected_label = "weekly"
+        else:
+            freq = "M"
+            expected_label = "monthly"
+        trend = dt.to_frame(name=col).set_index(col).resample(freq).size()
+        full_index = pd.date_range(start=trend.index.min(), end=trend.index.max(), freq=freq)
+        missing_periods = full_index.difference(trend.index)
+
+        trend_direction = "unknown"
+        trend_r2 = None
+        if target_col:
+            temp = dataframe[[col, target_col]].copy()
+            temp[col] = pd.to_datetime(temp[col], errors="coerce")
+            temp[target_col] = pd.to_numeric(temp[target_col], errors="coerce")
+            temp = temp.dropna().sort_values(col)
+            if len(temp) > 10:
+                temp = temp.set_index(col).resample(freq)[target_col].mean().dropna()
+                if len(temp) > 3:
+                    x = np.arange(len(temp))
+                    slope, intercept, r_value, p_value, std_err = linregress(x, temp.values)
+                    r2 = float(r_value ** 2)
+                    trend_r2 = round(r2, 4)
+                    if r2 > 0.3:
+                        trend_direction = "up" if slope > 0 else "down" if slope < 0 else "flat"
+                    else:
+                        trend_direction = "flat"
+
+        datetime_checks.append(
+            {
+                "column": col,
+                "expected_frequency": expected_label,
+                "missing_period_count": int(len(missing_periods)),
+                "missing_periods": [str(item) for item in missing_periods[:100]],
+                "range_start": str(dt.min()),
+                "range_end": str(dt.max()),
+                "target_trend_direction": trend_direction,
+                "target_trend_r2": trend_r2,
+            }
+        )
+
+    return {
+        "duplicate_columns": duplicate_columns,
+        "datetime_checks": datetime_checks,
+        "sample_size_flags": sample_size_flags,
+        "class_imbalance": class_imbalance,
+    }
 
 
 def _coerce_clean_dataframe(dataframe: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -409,6 +986,7 @@ def _save_datetime_chart(upload_id: str, dataframe: pd.DataFrame, column: str) -
 def _numeric_stats(upload_id: str, dataframe: pd.DataFrame, column: str) -> dict[str, Any]:
     series = pd.to_numeric(dataframe[column], errors="coerce")
     clean = series.dropna()
+    shape_info = _classify_distribution_shape(clean)
 
     q1 = float(clean.quantile(0.25)) if not clean.empty else None
     q2 = float(clean.quantile(0.50)) if not clean.empty else None
@@ -449,6 +1027,7 @@ def _numeric_stats(upload_id: str, dataframe: pd.DataFrame, column: str) -> dict
         "kurtosis": float(clean.kurtosis()) if not clean.empty else None,
         "outliers_iqr_count": outliers_iqr,
         "outliers_zscore_count": outliers_z,
+        "distribution_shape": shape_info,
         **charts,
     }
 
@@ -543,6 +1122,7 @@ def _quick_column_stats(dataframe: pd.DataFrame, column: str, inferred_type: str
     if inferred_type == "numeric":
         clean = pd.to_numeric(series, errors="coerce").dropna()
         if not clean.empty:
+            shape_info = _classify_distribution_shape(clean)
             q1, q2, q3 = float(clean.quantile(0.25)), float(clean.quantile(0.50)), float(clean.quantile(0.75))
             iqr = q3 - q1
             lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
@@ -559,6 +1139,7 @@ def _quick_column_stats(dataframe: pd.DataFrame, column: str, inferred_type: str
                 "skewness": float(clean.skew()),
                 "kurtosis": float(clean.kurtosis()),
                 "outliers_iqr_count": outliers_iqr,
+                "distribution_shape": shape_info,
             })
     elif inferred_type == "datetime":
         dt = pd.to_datetime(series, errors="coerce").dropna().sort_values()
@@ -669,16 +1250,21 @@ def compute_analysis(upload_id: str, sheet_name: str | None = None, mode: str = 
 
     cleaned_df, cleaning_meta = _coerce_clean_dataframe(dataframe)
     inferred_types = {column: _infer_column_type(cleaned_df[column]) for column in cleaned_df.columns}
-    flags = _quality_flags(cleaned_df, inferred_types)
-    summary = _dataset_summary(cleaned_df, inferred_types, flags)
+    correction = _smart_type_correction(cleaned_df, inferred_types)
+    final_types: dict[str, str] = correction["final_types"]
+
+    # Keep quality flags computed on final types where relevant
+    flags = _quality_flags(cleaned_df, final_types)
+    summary = _dataset_summary(cleaned_df, final_types, flags)
     logger.info("[%s] Quality score: %.1f", upload_id[:8], summary["quality_score"])
 
     # Decide which columns get charts vs quick stats
     focus_set = set(focus_columns) if focus_columns else set()
+    excluded_from_stats = {item["column"] for item in correction["excluded_columns"]}
     if mode == "full":
-        chart_columns = set(cleaned_df.columns)
+        chart_columns = set(cleaned_df.columns) - excluded_from_stats
     elif mode == "focused":
-        chart_columns = focus_set & set(cleaned_df.columns)
+        chart_columns = (focus_set & set(cleaned_df.columns)) - excluded_from_stats
     else:  # quick
         chart_columns = set()
 
@@ -697,11 +1283,23 @@ def compute_analysis(upload_id: str, sheet_name: str | None = None, mode: str = 
         stats_df = cleaned_df
 
     column_stats: dict[str, Any] = {}
-    total = len(inferred_types)
-    for idx, (column, inferred_type) in enumerate(inferred_types.items(), 1):
+    total = len(final_types)
+    for idx, (column, inferred_type) in enumerate(final_types.items(), 1):
         should_chart = column in chart_columns
         label = "full" if should_chart else "quick"
         logger.info("[%s] Processing column %d/%d: %s (%s, %s)", upload_id[:8], idx, total, column, inferred_type, label)
+
+        if inferred_type in {"id", "constant", "free_text"}:
+            series = cleaned_df[column]
+            column_stats[column] = {
+                "column": column,
+                "inferred_type": inferred_type,
+                "count": int(series.dropna().count()),
+                "missing_count": int(series.isna().sum()),
+                "missing_pct": round(float(series.isna().mean() * 100), 2),
+                "excluded_from_statistical_analysis": True,
+            }
+            continue
 
         if should_chart:
             # Full analysis with charts
@@ -718,15 +1316,27 @@ def compute_analysis(upload_id: str, sheet_name: str | None = None, mode: str = 
             column_stats[column] = _quick_column_stats(stats_df, column, inferred_type)
 
     # Use full dataframe for exact counts (missing, count, etc.)
-    for column, inferred_type in inferred_types.items():
+    for column, inferred_type in final_types.items():
         series = cleaned_df[column]
         column_stats[column]["count"] = int(series.dropna().count())
         column_stats[column]["missing_count"] = int(series.isna().sum())
         column_stats[column]["missing_pct"] = round(float(series.isna().mean() * 100), 2)
 
-    # Compute overall trends for quick/focused modes
-    if mode in ("quick", "focused"):
-        summary["trends"] = _compute_dataset_trends(cleaned_df, inferred_types)
+    # Universal derived findings for every dataset (pre-AI)
+    summary["trends"] = _compute_dataset_trends(cleaned_df, final_types)
+    correlation_findings = _correlation_analysis(cleaned_df, final_types)
+    group_differences = _group_difference_analysis(cleaned_df, final_types)
+    outlier_characterization = _outlier_characterisation(cleaned_df, final_types)
+    dataset_checks = _dataset_level_checks(cleaned_df, final_types)
+
+    non_descriptive_names = sum(
+        1 for col in cleaned_df.columns if col.lower() in {"x", "a", "b"} or re.match(r"^(col\d+|[a-z]?\d+)$", col.lower())
+    )
+    name_quality_flag = (
+        "Column names are not descriptive — interpretations are based purely on value patterns, not column names."
+        if non_descriptive_names >= max(2, len(cleaned_df.columns) // 2)
+        else None
+    )
 
     cleaned_csv_path = output_dir(upload_id) / "cleaned.csv"
     cleaned_df.to_csv(cleaned_csv_path, index=False)
@@ -736,10 +1346,18 @@ def compute_analysis(upload_id: str, sheet_name: str | None = None, mode: str = 
         "summary": summary,
         "analysis_mode": mode,
         "focus_columns": list(chart_columns),
+        "pre_analysis": {
+            "smart_type_correction": correction,
+            "correlation_analysis": correlation_findings,
+            "group_difference_analysis": group_differences,
+            "outlier_characterisation": outlier_characterization,
+            "dataset_level_checks": dataset_checks,
+            "name_quality_flag": name_quality_flag,
+        },
         "columns": [
             {
                 "name": column,
-                "inferred_type": inferred_types[column],
+                "inferred_type": final_types[column],
                 "health": _compute_column_health(column_stats[column], row_count_int),
                 "quality_flags": {
                     "missing_pct": flags["missing"][column]["pct"],
