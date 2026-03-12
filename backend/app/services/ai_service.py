@@ -18,39 +18,40 @@ def _fallback_column_summary(stats: dict[str, Any]) -> dict[str, str]:
     if inferred_type == "numeric":
         return {
             "what_does_this_look_like": (
-                f"Most values sit around {stats.get('median')} while the average is {stats.get('mean')}. "
-                f"Values span from {stats.get('min')} to {stats.get('max')} with {missing}% missing entries."
+                f"Most values for this column sit comfortably around {stats.get('median')}. "
+                f"The data ranges from {stats.get('min')} to {stats.get('max')}, "
+                f"with {missing}% of entries missing."
             ),
             "anything_unusual": (
-                f"There are {stats.get('outliers_iqr_count', 0)} values that sit far from the typical range."
+                f"There are {stats.get('outliers_iqr_count', 0)} unusual data points that fall well outside the typical range — worth a closer look."
             ),
-            "what_should_i_do": "Review outliers before using averages for business decisions.",
+            "what_should_i_do": "Check those unusual values before relying on averages for any decisions.",
         }
     if inferred_type == "datetime":
         return {
             "what_does_this_look_like": (
-                f"Dates run from {stats.get('min_date')} to {stats.get('max_date')} with {missing}% missing values."
+                f"This timeline runs from {stats.get('min_date')} to {stats.get('max_date')}, with {missing}% of dates missing."
             ),
-            "anything_unusual": f"Detected {stats.get('gap_count', 0)} time gaps in the selected period.",
-            "what_should_i_do": "Investigate missing periods before building trend-based reports.",
+            "anything_unusual": f"There are {stats.get('gap_count', 0)} gaps in the timeline where data seems to be missing.",
+            "what_should_i_do": "Look into the gaps — missing time periods can distort any trend you try to read.",
         }
     return {
         "what_does_this_look_like": (
-            f"This column is mostly made of category labels. The most frequent value is {stats.get('mode')} with {missing}% missing values."
+            f"This column contains category labels. The most common value is \"{stats.get('mode')}\" and {missing}% of entries are blank."
         ),
         "anything_unusual": (
-            f"It has {stats.get('cardinality')} unique values, which may be high depending on business context."
+            f"It has {stats.get('cardinality')} different values — if that feels high, some categories may need merging."
         ),
-        "what_should_i_do": "Standardize category names and merge near-duplicate labels before deeper analysis.",
+        "what_should_i_do": "Clean up category names and merge near-duplicates before drawing conclusions.",
     }
 
 
 def _fallback_dataset_summary(analysis: dict[str, Any]) -> str:
     summary = analysis.get("summary", {})
     return (
-        f"The dataset has {summary.get('rows')} rows and {summary.get('columns')} columns with memory usage "
-        f"around {summary.get('memory_mb')} MB. The overall quality score is {summary.get('quality_score')} out of 100. "
-        "Main issues include missing data and potential high-cardinality or identifier-like columns."
+        f"You're looking at a dataset with {summary.get('rows')} rows and {summary.get('columns')} columns. "
+        f"Overall data quality scores {summary.get('quality_score')} out of 100. "
+        "The main things to watch for are missing entries and a few columns that may be IDs rather than useful data."
     )
 
 
@@ -61,22 +62,22 @@ def _fallback_key_findings(analysis: dict[str, Any], metadata: dict[str, Any]) -
     for column in columns:
         health = column.get("health", {}).get("overall", {})
         if health.get("status") in {"warning", "critical"}:
-            warnings.append(f"{column.get('name')} needs attention: {health.get('label')}")
+            warnings.append(f"\"{column.get('name')}\" looks like it needs some cleanup before you can trust it.")
 
     top_findings = [
-        f"The dataset contains {summary.get('rows')} rows across {summary.get('columns')} columns.",
-        f"Overall quality score is {summary.get('quality_score')} out of 100.",
-        "A small set of columns appears to need cleanup before reporting.",
+        f"You have {summary.get('rows')} rows of data across {summary.get('columns')} columns — plenty to work with.",
+        f"Data quality scores {summary.get('quality_score')} out of 100 — {'solid' if (summary.get('quality_score') or 0) >= 70 else 'could use attention'}.",
+        "A few columns need cleanup before you can confidently report on them.",
     ]
 
     return {
         "whats_in_this_data": (
-            f"{metadata.get('file_name', 'This file')} includes operational records with mixed data types. "
-            "You can use it for trend and category analysis after quick cleanup checks."
+            f"{metadata.get('file_name', 'This file')} contains records you can use for trend and category analysis "
+            "once a few quick cleanup items are addressed."
         ),
         "top_findings": top_findings,
         "watch_out_for": warnings[:2],
-        "suggested_next_step": "Review the red and yellow health columns first, then rerun summaries.",
+        "suggested_next_step": "Start by reviewing the columns flagged in red or yellow, then re-check your summaries.",
     }
 
 
@@ -206,13 +207,21 @@ def _computed_facts_block(analysis: dict[str, Any], metadata: dict[str, Any]) ->
 
 def _key_findings_prompt(analysis: dict[str, Any], metadata: dict[str, Any]) -> tuple[str, str]:
     system_prompt = (
-        "You are a statistician writing a 4-sentence briefing about a dataset. "
-        "Every claim must be grounded in the computed facts provided by the user. "
-        "Sentence 1: infer what the data likely measures from column names/value patterns; if names are ambiguous, say so. "
-        "Sentence 2: single most statistically interesting cross-column finding with actual numbers. "
-        "Sentence 3: biggest quality/interpretation risk with numbers. "
-        "Sentence 4: most useful concrete next action tied to specific columns/findings. "
-        "Never invent missing facts. Do not include filler or generic statements."
+        "You are an expert, approachable data consultant — a friendly 'statistician at hand' "
+        "translating raw numbers into plain English for a non-technical business user.\n\n"
+        "STRICT RULES:\n"
+        "- ZERO statistical jargon. Never say: p-value, correlation coefficient, standard deviation, "
+        "IQR, skewness, variance, regression, z-score, percentile, kurtosis.\n"
+        "- USE INSTEAD: average, typical range, strong relationship, unusual data points, trend.\n"
+        "- Do NOT read numbers back. Translate the math into real-world behavior — focus on the 'so what?'\n"
+        "- If column names are unclear (e.g. '150', '4'), refer to them by name but gently note that "
+        "renaming them would give better context.\n"
+        "- Every claim must be grounded in the computed facts provided. Never invent numbers.\n\n"
+        "OUTPUT STRUCTURE (map to JSON keys):\n"
+        "- whats_in_this_data: 'The Headline' — a punchy, one-sentence summary of the most important finding.\n"
+        "- top_findings: 'What's Happening' — 2-3 bullet points explaining major trends in conversational English.\n"
+        "- watch_out_for: risks or data quality issues phrased as friendly warnings (up to 2).\n"
+        "- suggested_next_step: 'What You Should Do' — one highly actionable recommendation.\n"
     )
     user_prompt = (
         _computed_facts_block(analysis, metadata)
@@ -223,24 +232,40 @@ def _key_findings_prompt(analysis: dict[str, Any], metadata: dict[str, Any]) -> 
 
 def _column_prompt(column_name: str, stats: dict[str, Any]) -> tuple[str, str]:
     system_prompt = (
-        "You are explaining one data column to a mixed audience. "
-        "Use only supplied computed values. No fabricated numbers."
+        "You are a friendly data consultant describing one column to a non-technical business user.\n\n"
+        "STRICT RULES:\n"
+        "- ZERO jargon. Never say: standard deviation, IQR, skewness, kurtosis, variance, z-score, "
+        "percentile, regression, correlation coefficient.\n"
+        "- USE INSTEAD: average, typical range, spread, unusual data points, consistent/inconsistent.\n"
+        "- Humanize the data: tell a story about its shape, don't just list numbers.\n"
+        "  Instead of 'Mean is 5.8, standard deviation is 0.83' say: "
+        "  'Most values sit comfortably around 5.8. The data is quite consistent, mostly staying between 5.0 and 6.6.'\n"
+        "- If the column name is unclear, refer to it by name but suggest renaming for clarity.\n"
+        "- Use only supplied computed values. Never invent numbers.\n"
     )
     if stats.get("inferred_type") == "numeric":
         user_prompt = (
-            f"Column: {column_name}\n"
-            f"DISTRIBUTION: shape={stats.get('distribution_shape')}, mean={stats.get('mean')}, median={stats.get('median')}, mode={stats.get('mode')}, std={stats.get('std')}, "
-            f"range={stats.get('min')} to {stats.get('max')}, skewness={stats.get('skewness')}, kurtosis={stats.get('kurtosis')}, outliers_iqr={stats.get('outliers_iqr_count')}, missing={stats.get('missing_pct')}%\n\n"
-            "Write 3 short paragraphs: (1) shape/spread (2) relationships or independence (3) watch-outs. Then return JSON keys: what_does_this_look_like, anything_unusual, what_should_i_do."
+            f"Column: \"{column_name}\"\n"
+            f"Computed facts: shape={stats.get('distribution_shape')}, average={stats.get('mean')}, midpoint={stats.get('median')}, "
+            f"most-common={stats.get('mode')}, spread={stats.get('std')}, "
+            f"range={stats.get('min')} to {stats.get('max')}, unusual-points={stats.get('outliers_iqr_count')}, missing={stats.get('missing_pct')}%\n\n"
+            "Describe this column in 3 short, conversational paragraphs:\n"
+            "(1) Where values cluster and how spread out they are — tell a story, don't recite numbers.\n"
+            "(2) Whether anything stands out or seems off.\n"
+            "(3) One practical thing the user should do about it.\n\n"
+            "Return JSON keys: what_does_this_look_like, anything_unusual, what_should_i_do."
         )
     else:
         top = stats.get("top_10", [])[:5]
         user_prompt = (
-            f"Column: {column_name}\n"
+            f"Column: \"{column_name}\"\n"
             f"Top categories: {top}\n"
-            f"Total unique values: {stats.get('cardinality')}\n"
+            f"Total different values: {stats.get('cardinality')}\n"
             f"Missing: {stats.get('missing_pct')}%\n\n"
-            "Write 2 short paragraphs: (1) composition/balance (2) what this column explains. Then return JSON keys: what_does_this_look_like, anything_unusual, what_should_i_do."
+            "Describe this column in 2 short, conversational paragraphs:\n"
+            "(1) What makes up this column — is it dominated by a few values or evenly spread?\n"
+            "(2) What this column might be useful for, or any concerns.\n\n"
+            "Return JSON keys: what_does_this_look_like, anything_unusual, what_should_i_do."
         )
     return system_prompt, user_prompt
 
@@ -354,9 +379,16 @@ def generate_chat_answer(analysis: dict[str, Any], metadata: dict[str, Any], mes
         max_tokens=700,
         temperature=0,
         system=(
-            "You are a data analyst assistant. Answer using only computed facts provided. "
-            "Never invent numbers. If a requested fact is absent, say: 'I don't have that information from this dataset.' "
-            "Use actual column names and values. 2-4 sentences for simple questions."
+            "You are a friendly 'statistician at hand' — an approachable data consultant helping "
+            "a non-technical business user understand their data.\n\n"
+            "RULES:\n"
+            "- ZERO jargon. Never say: p-value, correlation coefficient, standard deviation, IQR, "
+            "skewness, variance, regression, z-score, percentile. "
+            "Use plain words: average, typical range, strong relationship, unusual points, trend.\n"
+            "- Focus on the 'so what?' — translate math into real-world behavior.\n"
+            "- Answer using ONLY the computed facts provided. Never invent numbers.\n"
+            "- If a requested fact is absent, say: 'I don't have that information from this dataset.'\n"
+            "- Use actual column names and values. Keep answers to 2-4 conversational sentences."
         ),
         messages=[{"role": "user", "content": prompt}],
     )
